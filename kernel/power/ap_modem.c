@@ -434,7 +434,11 @@ static irqreturn_t modem_wake_ap_irq(int irq, void *data)
 
 static int __init ap_modem_init(void)
 {
+
     int ret = 0;
+
+	/** UGlee **/
+	return 0;
 
 #ifdef CONFIG_BOOTCASE_VIATELECOM
     /*CP has not been powered on when boot by charger, then do nothing*/
@@ -503,6 +507,8 @@ err_reg_device:
 
 static void  __exit ap_modem_exit(void)
 {
+    /* UGlee do nothing */
+    return;
     free_irq(gpio_to_irq(GPIO_MDM_WAKE_AP), NULL);
     wake_lock_destroy(&pmdm->modem_lock);
     platform_driver_unregister(&ap_modem_driver);

@@ -5,6 +5,9 @@
 
 # Compiled Dynamic libraries
 *.so
+*.ko
+*.mod.c
+*.mod
 
 # Compiled Static libraries
 *.lai
@@ -14,8 +17,17 @@
 # Compiler script
 *.cmd
 
+# KDiff3 backup
+*.orig
+
+*.order
+*.builtin
+
+
 .gitignore.swp
 .missing-syscalls.d
+
+.tmp_versions
 .tmp_System.map
 .tmp_kallsyms1.S
 .tmp_kallsyms2.S

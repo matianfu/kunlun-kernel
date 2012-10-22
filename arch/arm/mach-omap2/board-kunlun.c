@@ -41,6 +41,8 @@
 #include <linux/i2c/adbs-a320.h>
 #endif
 
+/* UGlee */
+/* this macro is defined by default and removed now */
 #ifdef CONFIG_MACH_OMAP3_VIBRAOTR
 void __init kunlun_init_vibrator(void);
 #endif
@@ -64,6 +66,9 @@ int vaux1_control(int enable)
 				regulator_disable(vaux1_regulator);
 }
 
+/* UGlee */
+/* This macro is defined by default, removed now */
+/* vaux2 is not used in tomahawk */
 #if defined(CONFIG_SENSORS_ADBS_A320)
 struct regulator *vaux2_regulator = NULL;
 
@@ -222,31 +227,47 @@ static void __init omap_kunlun_init_irq(void)
 	omap_init_irq();
 }
 
+
+
 #ifdef CONFIG_OMAP_MUX
 static struct omap_board_mux board_mux[] __initdata = {
-/* DSS for LCD */
-    OMAP3_MUX(DSS_PCLK, OMAP_MUX_MODE0 | OMAP_PIN_OUTPUT), /*PCLK*/
-    OMAP3_MUX(DSS_HSYNC, OMAP_MUX_MODE0 | OMAP_PIN_OUTPUT),/*HSYNC*/
-    OMAP3_MUX(DSS_VSYNC, OMAP_MUX_MODE0 | OMAP_PIN_OUTPUT), /*VSYNC*/
-    OMAP3_MUX(DSS_ACBIAS, OMAP_MUX_MODE0 | OMAP_PIN_OUTPUT), /*ACBIAS*/
-    OMAP3_MUX(DSS_DATA0, OMAP_MUX_MODE0 | OMAP_PIN_INPUT), /*DATA0*/
-    OMAP3_MUX(DSS_DATA1, OMAP_MUX_MODE0 | OMAP_PIN_INPUT), /*DATA1*/
-    OMAP3_MUX(DSS_DATA2, OMAP_MUX_MODE0 | OMAP_PIN_INPUT), /*DATA2*/
-    OMAP3_MUX(DSS_DATA3, OMAP_MUX_MODE0 | OMAP_PIN_INPUT), /*DATA3*/
-    OMAP3_MUX(DSS_DATA4, OMAP_MUX_MODE0 | OMAP_PIN_INPUT), /*DATA4*/
-    OMAP3_MUX(DSS_DATA5, OMAP_MUX_MODE0 | OMAP_PIN_INPUT), /*DATA5*/
-    OMAP3_MUX(DSS_DATA6, OMAP_MUX_MODE0 | OMAP_PIN_INPUT), /*DATA6*/
-    OMAP3_MUX(DSS_DATA7, OMAP_MUX_MODE0 | OMAP_PIN_INPUT), /*DATA7*/
-    OMAP3_MUX(DSS_DATA8, OMAP_MUX_MODE0 | OMAP_PIN_INPUT), /*DATA8*/
-    OMAP3_MUX(DSS_DATA9, OMAP_MUX_MODE0 | OMAP_PIN_INPUT), /*DATA9*/
-    OMAP3_MUX(DSS_DATA10, OMAP_MUX_MODE0 | OMAP_PIN_INPUT), /*DATA10*/
-    OMAP3_MUX(DSS_DATA11, OMAP_MUX_MODE0 | OMAP_PIN_INPUT), /*DATA11*/
-    OMAP3_MUX(DSS_DATA12, OMAP_MUX_MODE0 | OMAP_PIN_INPUT), /*DATA12*/
-    OMAP3_MUX(DSS_DATA13, OMAP_MUX_MODE0 | OMAP_PIN_INPUT), /*DATA13*/
-    OMAP3_MUX(DSS_DATA14, OMAP_MUX_MODE0 | OMAP_PIN_INPUT), /*DATA14*/
-    OMAP3_MUX(DSS_DATA15, OMAP_MUX_MODE0 | OMAP_PIN_INPUT), /*DATA15*/
-    OMAP3_MUX(DSS_DATA22, OMAP_MUX_MODE4 | OMAP_PIN_OUTPUT), /*V_CAM_EN GPIO_92*/
-    OMAP3_MUX(DSS_DATA23, OMAP_MUX_MODE4 | OMAP_PIN_OUTPUT), /*LCD_RST GPIO_93*/
+	/* DSS for LCD */
+    	OMAP3_MUX(DSS_PCLK,	OMAP_MUX_MODE0 | OMAP_PIN_OUTPUT), /*PCLK*/
+    	OMAP3_MUX(DSS_HSYNC, 	OMAP_MUX_MODE0 | OMAP_PIN_OUTPUT),/*HSYNC*/
+    	OMAP3_MUX(DSS_VSYNC, 	OMAP_MUX_MODE0 | OMAP_PIN_OUTPUT), /*VSYNC*/
+    	OMAP3_MUX(DSS_ACBIAS, 	OMAP_MUX_MODE0 | OMAP_PIN_OUTPUT), /*ACBIAS*/
+    	OMAP3_MUX(DSS_DATA0, 	OMAP_MUX_MODE0 | OMAP_PIN_INPUT), /*DATA0*/
+    	OMAP3_MUX(DSS_DATA1, 	OMAP_MUX_MODE0 | OMAP_PIN_INPUT), /*DATA1*/
+    	OMAP3_MUX(DSS_DATA2, 	OMAP_MUX_MODE0 | OMAP_PIN_INPUT), /*DATA2*/
+    	OMAP3_MUX(DSS_DATA3, 	OMAP_MUX_MODE0 | OMAP_PIN_INPUT), /*DATA3*/
+    	OMAP3_MUX(DSS_DATA4, 	OMAP_MUX_MODE0 | OMAP_PIN_INPUT), /*DATA4*/
+    	OMAP3_MUX(DSS_DATA5, 	OMAP_MUX_MODE0 | OMAP_PIN_INPUT), /*DATA5*/
+    	OMAP3_MUX(DSS_DATA6, 	OMAP_MUX_MODE0 | OMAP_PIN_INPUT), /*DATA6*/
+    	OMAP3_MUX(DSS_DATA7, 	OMAP_MUX_MODE0 | OMAP_PIN_INPUT), /*DATA7*/
+    	OMAP3_MUX(DSS_DATA8, 	OMAP_MUX_MODE0 | OMAP_PIN_INPUT), /*DATA8*/
+    	OMAP3_MUX(DSS_DATA9, 	OMAP_MUX_MODE0 | OMAP_PIN_INPUT), /*DATA9*/
+    	OMAP3_MUX(DSS_DATA10, 	OMAP_MUX_MODE0 | OMAP_PIN_INPUT), /*DATA10*/
+    	OMAP3_MUX(DSS_DATA11, 	OMAP_MUX_MODE0 | OMAP_PIN_INPUT), /*DATA11*/
+    	OMAP3_MUX(DSS_DATA12, 	OMAP_MUX_MODE0 | OMAP_PIN_INPUT), /*DATA12*/
+    	OMAP3_MUX(DSS_DATA13, 	OMAP_MUX_MODE0 | OMAP_PIN_INPUT), /*DATA13*/
+    	OMAP3_MUX(DSS_DATA14, 	OMAP_MUX_MODE0 | OMAP_PIN_INPUT), /*DATA14*/
+    	OMAP3_MUX(DSS_DATA15, 	OMAP_MUX_MODE0 | OMAP_PIN_INPUT), /*DATA15*/
+    	OMAP3_MUX(DSS_DATA16,	OMAP_MUX_MODE0 | OMAP_PIN_INPUT),
+    	OMAP3_MUX(DSS_DATA17,	OMAP_MUX_MODE0 | OMAP_PIN_INPUT),
+    	OMAP3_MUX(DSS_DATA18,	OMAP_MUX_MODE0 | OMAP_PIN_INPUT),
+    	OMAP3_MUX(DSS_DATA19,	OMAP_MUX_MODE0 | OMAP_PIN_INPUT),
+    	OMAP3_MUX(DSS_DATA20,	OMAP_MUX_MODE0 | OMAP_PIN_INPUT),
+       	OMAP3_MUX(DSS_DATA21,	OMAP_MUX_MODE0 | OMAP_PIN_INPUT),
+    	OMAP3_MUX(DSS_DATA22, 	OMAP_MUX_MODE0 | OMAP_PIN_INPUT), 
+    	OMAP3_MUX(DSS_DATA23, 	OMAP_MUX_MODE0 | OMAP_PIN_INPUT),
+
+	/*UART1 for IDSCAN interface AND Debug*/
+	OMAP3_MUX(UART1_TX, 	OMAP_MUX_MODE4 | OMAP_PIN_OUTPUT), 		/*UART1_TX*/
+	OMAP3_MUX(UART1_RX, 	OMAP_MUX_MODE4 | OMAP_PIN_INPUT_PULLUP), 	/*UART1_RX*/
+	OMAP3_MUX(UART1_CTS, 	OMAP_MUX_MODE4 | OMAP_PIN_OUTPUT),  		/*UART1_EN GPIO_150*/
+
+
+#if 0
     OMAP3_MUX(MCBSP4_FSX, OMAP_MUX_MODE4 | OMAP_PIN_OUTPUT), /*LCD_BL_EN GPIO_155*/
     OMAP3_MUX(MCSPI1_CLK, OMAP_MUX_MODE0 | OMAP_PIN_OUTPUT), /*LCD LCD_SPI_CLK*/
     OMAP3_MUX(MCSPI1_SIMO, OMAP_MUX_MODE0 | OMAP_PIN_OUTPUT), /*LCD LCD_SPI_SIMO*/
@@ -424,11 +445,16 @@ static struct omap_board_mux board_mux[] __initdata = {
     OMAP3_MUX(CAM_D9, OMAP_MUX_MODE4 | OMAP_PIN_INPUT_PULLDOWN), /* NFC_CLK_REQ, GPIO_108*/
 #endif
 
+#endif
+
     { .reg_offset = OMAP_MUX_TERMINATOR },
 };
 #else
 #define board_mux	NULL
 #endif
+
+
+#define board_mux	NULL /* UGlee */
 
 /*config the pins between AP and CP*/
 static void __init cbp_pin_init(void)
@@ -580,23 +606,58 @@ extern int usb_ohci_init(void);
 #endif
 static void __init omap_kunlun_init(void)
 {
+
+	/* this function is defined in this file */
 	omap3_mux_init(board_mux, OMAP_PACKAGE_CBP);
-	config_wlan_mux();
+
+#if 0	
+	/** 
+	 *   this function is defined in board-zoom2-wifi.c
+	 *   and be careful the mux is different from that of tomahawk
+	 */
+	// config_wlan_mux();
+
+	/* see board-kunlun-peripherals.c */
 	kunlun_peripherals_init();
+
+	/* see board-kunlun-flash.c */
 	kunlun_flash_init();
+
+	/* see board-kunlun-display.c */
 	kunlun_display_init();
+
+	/* don't know what's going on, this pin is GPMC_WAIT2 and pulled up to VIO_1V8 */
 	omap_mux_init_gpio(64, OMAP_PIN_OUTPUT);
-	omap_mux_init_gpio(109, OMAP_PIN_OUTPUT);
-	omap_mux_init_gpio(161, OMAP_PIN_OUTPUT);
-	omap_mux_init_gpio(McBSP3_BT_GPIO, OMAP_PIN_OUTPUT);
-       cbp_pin_init();
+
+	/* this pin is configured twice, see board-kunlun-peripherals.c */
+	/* this pin is BT_RST_N, BT_EN pin on wl1271 */
+	/* the code should be removed here, do it in board-kunlun-peripherals */
+	// omap_mux_init_gpio(109, OMAP_PIN_OUTPUT);
+
+	/* this pin is FM_EN */
+	// omap_mux_init_gpio(161, OMAP_PIN_OUTPUT);
+
+	/* gpio 22 is C_PCM_EN, which enable modem pcm to twl5030 pcm.
+	   this is a bus, it also connect to wl1271 audio pcm, maybe fm, not sure */
+	// omap_mux_init_gpio(McBSP3_BT_GPIO, OMAP_PIN_OUTPUT);
+
+	/* skip for now */ 
+        // cbp_pin_init();
+
+	/* it seems ohci support for via cbp need some old tricks */
+	/* this macro is defined by default, disabled */
 #ifdef CONFIG_USB_OHCI_HCD_OMAP3_LEGACY
-    usb_ohci_init();
+    	usb_ohci_init();
 #else
-	usb_uhhtll_init(&usbhs_pdata);
+	/* let's do a minimal boot first, enable this later
+	   and be sure to set the usbhs_pdata correctly */
+	// usb_uhhtll_init(&usbhs_pdata);
 #endif
+
+	// smartreflex, no idea how to deal with it
 	sr_class1p5_init();
 
+	/* seems to be essential part */
 #ifdef CONFIG_PM
 #ifdef CONFIG_TWL4030_CORE
 	omap_voltage_register_pmic(&omap_pmic_core, "core");
@@ -604,11 +665,16 @@ static void __init omap_kunlun_init(void)
 #endif
 	omap_voltage_init_vc(&vc_config);
 #endif
-	platform_add_devices(kunlun_devices, ARRAY_SIZE(kunlun_devices));
-	wl127x_vio_leakage_fix();
 
+	/* wl1271 wifi and bt, enable them latter */
+	// platform_add_devices(kunlun_devices, ARRAY_SIZE(kunlun_devices));
+	// wl127x_vio_leakage_fix();
+
+	/* this macro defined by default, disabled */
 #ifdef CONFIG_MACH_OMAP3_VIBRAOTR
 	kunlun_init_vibrator();
+#endif
+
 #endif
 }
 

@@ -720,6 +720,7 @@ static struct omap_uart_port_info omap_serial_platform_data[] = {
 
 static void enable_board_wakeup_source(void)
 {
+	/* sys_nirq is connected to TWL5030 INT1 */
 	/* T2 interrupt line (keypad) */
 	omap_mux_init_signal("sys_nirq",
 		OMAP_WAKEUP_EN | OMAP_PIN_INPUT_PULLUP);
@@ -727,41 +728,64 @@ static void enable_board_wakeup_source(void)
 
 static void config_wlan_gpio(void)
 {
+	/* wlan_irq in kunlun p2 */
 	omap_mux_init_signal("gpio_162", OMAP_PIN_INPUT);
 }
 
 static void config_bt_gpio(void)
 {
+	/* UGlee: original sch say gpio_109 named as BT_RST_EN, not BT_EN */
 	/* configure BT_EN gpio */
 	omap_mux_init_signal("gpio_109", OMAP_PIN_INPUT);
 }
 
 static void config_mux_mcbsp3(void)
 {
+	/* UGlee: this pin is not connected on kunlun p2 */
 	/*Mux setting for GPIO164 McBSP3*/
 	omap_mux_init_signal("gpio_164", OMAP_PIN_OUTPUT);
 }
 
 void __init kunlun_peripherals_init(void)
 {
+	/* init wake lock struct for bluetooth uart */
 	wake_lock_init(&uart_lock, WAKE_LOCK_SUSPEND, "uart_wake_lock");
 
+	/* init twl4030 scripts, check twl4030.c in this folder */
 	twl4030_get_scripts(&kunlun_t2scripts_data);
+
+	/* init i2c and i2c device, this may not be clean but expect the probe fails */
 	omap_i2c_init();
 
-	config_wlan_gpio();
-	config_bt_gpio();
-	platform_add_devices(kunlun_board_devices,
-		ARRAY_SIZE(kunlun_board_devices));
+	/* init wlan irq */
+	// config_wlan_gpio();
+	
+	/* init BT_RST_EN / BT_EN */
+	// config_bt_gpio();
+
+	/* init four misc device, backlight, bt rfkill, headset and button led */ 	
+	// platform_add_devices(kunlun_board_devices,
+	//	ARRAY_SIZE(kunlun_board_devices));
+
+	/* init serial port, notice the bt port holds wake lock */
 	omap_serial_init(omap_serial_platform_data);
+
+	/* init usb otg */
 	usb_musb_init(&musb_board_data);
 
+	/* defined by default, disabled */
 #ifdef CONFIG_SENSORS_AKM8975
 	akm8975_dev_init();
 #endif
-	config_mux_mcbsp3();
+
+	/* useless according to schematic, maybe for other board  */
+	// config_mux_mcbsp3();
+
+	/* the only wakeup source is the TWL5030 INT1 */
 	enable_board_wakeup_source();
 
+	/* gpio 156/157 are FM_RX_EN/FM_TX_EN respectively */
+	/*
 	if (gpio_request(156, "io156") < 0) {
 		printk(KERN_ERR "can't get 156 pen down GPIO\n");
 	}
@@ -770,4 +794,5 @@ void __init kunlun_peripherals_init(void)
 		printk(KERN_ERR "can't get 156 pen down GPIO\n");
 	}
 	gpio_direction_output(157, 0);
+	*/
 }
