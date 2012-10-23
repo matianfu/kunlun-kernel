@@ -352,6 +352,9 @@ struct platform_data kunlun_hi253_platform_data = {
 
 #endif
 
+#if 0
+
+/** UGlee commented out **/
 
 void __init kunlun_cam_init(void)
 {
@@ -379,4 +382,7 @@ void __init kunlun_cam_init(void)
 
     cam_inited = 1;
 }
+
+#endif
+
 #endif

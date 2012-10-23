@@ -23,6 +23,8 @@
 *.order
 *.builtin
 
+# For various image file
+*.img
 
 .gitignore.swp
 .missing-syscalls.d

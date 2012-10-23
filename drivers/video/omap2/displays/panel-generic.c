@@ -41,7 +41,7 @@ static struct omap_video_timings generic_panel_timings = {
 
 	.x_res		= 1024,
 	.y_res		= 600,
-	.pixel_clock	= 51200,
+	.pixel_clock	= 26000,
 	.hfp		= 160,
 	.hsw		= 80,
 	.hbp		= 160,

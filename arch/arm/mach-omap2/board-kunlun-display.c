@@ -48,6 +48,7 @@
 
 static int kunlun_panel_power_enable(int enable)
 {
+#if 0
 	int ret;
 	struct regulator *vdds_dsi_reg;
 
@@ -72,29 +73,31 @@ static int kunlun_panel_power_enable(int enable)
 		ret = regulator_disable(vdds_dsi_reg);
 
 	return ret;
+#endif
+	return 0;
 }
 
 static int kunlun_lcd_panel_enable(struct omap_dss_device *dssdev)
 {
+/**	
 	int ret;
 
-	// UGlee
-	//ret = kunlun_panel_power_enable(1);
-	return ret;
+	ret = kunlun_panel_power_enable(1);
+	return ret; **/
+return 0;
 }
 
 static void kunlun_lcd_panel_disable(struct omap_dss_device *dssdev)
 {
 	// kunlun_panel_power_enable(0);
-	// UGlee
 }
 
 static struct omap_dss_device kunlun_lcd_panel_device = {
 	.name = "lcd",
-	.driver_name = "generic_panel", /** .driver_name = "rm68041_panel", **/
+	.driver_name = "generic_panel",
 	.type = OMAP_DISPLAY_TYPE_DPI,
 	.phy.dpi.data_lines = 24,
-	.ctrl.pixel_size = 24, /** UGlee change from 16 **/
+	.ctrl.pixel_size = 24,
 	.platform_enable = kunlun_lcd_panel_enable,
 	.platform_disable = kunlun_lcd_panel_disable,
 };
@@ -182,14 +185,9 @@ static struct spi_board_info kunlun_spi_board_info[] __initdata = {
 
 void __init kunlun_display_init(void)
 {
-	/* omap display init */
 	omap_display_init(&kunlun_dss_data);
-
-	/* spi is not used anywhere on hyena */
-	// spi_register_board_info(kunlun_spi_board_info,
-	//			ARRAY_SIZE(kunlun_spi_board_info));
-
-	/* This macro defined by default, disabled */
+	spi_register_board_info(kunlun_spi_board_info,
+				ARRAY_SIZE(kunlun_spi_board_info));
 #ifdef CONFIG_TOUCHSCREEN_ADS7846
 	ads7846_dev_init();
 #endif

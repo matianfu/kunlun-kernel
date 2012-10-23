@@ -179,13 +179,25 @@ obj-$(CONFIG_MACH_OMAP_ZOOM3)		+= board-zoom3.o \
 					   board-zoom-display.o \
 					   hsmmc.o \
 					   board-zoom-debugboard.o
-obj-$(CONFIG_MACH_OMAP_KUNLUN_P2)	+= board-kunlun.o \
+
+# UGlee, kunlun original
+# obj-$(CONFIG_MACH_OMAP_KUNLUN_P2)	+= board-kunlun.o \
 					   board-kunlun-flash.o \
 					   board-kunlun-peripherals.o \
 					   board-kunlun-camera.o \
 					   board-kunlun-display.o \
 					   hsmmc.o \
 					   board-zoom-debugboard.o
+
+# UGlee, modified
+obj-$(CONFIG_MACH_OMAP_KUNLUN_P2)	+= board-kunlun.o \
+					   board-kunlun-flash.o \
+					   board-kunlun-peripherals.o \
+					   board-kunlun-camera.o \
+					   board-puma-display.o \
+					   hsmmc.o \
+					   board-zoom-debugboard.o
+
 obj-$(CONFIG_MACH_OMAP_KUNLUN_N710E)	+= board-kunlun-n710e.o \
 					   board-kunlun-n710e-flash.o \
 					   board-kunlun-n710e-peripherals.o \

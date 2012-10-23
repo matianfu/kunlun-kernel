@@ -32,6 +32,7 @@ struct flash_partitions {
 #define BL_MACHINE_NAME "lcd"
 extern void __init kunlun_peripherals_init(void);
 extern void __init kunlun_display_init(void);
+extern void __init puma_display_init(void);	/** UGlee **/
 extern void __init kunlun_flash_init(void);
 
 #define ZOOM2_HEADSET_EXTMUTE_GPIO	153
