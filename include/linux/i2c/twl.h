@@ -803,6 +803,7 @@ int twl4030_sih_setup(int module);
 
 #ifdef CONFIG_REGULATOR_KUNLUN
 /*regulator in Kunlun*/
+/* seems to be number, not offset or address, just number, UGlee */
 #define RES_Kbl_Ref		(RES_Main_Ref +1)
 #define TWL4030_REG_KBL		(TWL4030_REG_VUSB3V1 + 1)
 #define SWITCH_GPIO_GPS		(TWL4030_REG_VUSB3V1 + 2)
@@ -811,6 +812,7 @@ int twl4030_sih_setup(int module);
 #define SWITCH_GPIO_BT		(TWL4030_REG_VUSB3V1 + 5)
 #define SWITCH_GPIO_FM		(TWL4030_REG_VUSB3V1 + 6)
 
+/** all these definitions not used anywhere, UGlee **/
 #define GPS_SW_GPIO	(16)
 #define CAM_SW_GPIO	(113)
 #define WLAN_SW_GPIO	(158)
