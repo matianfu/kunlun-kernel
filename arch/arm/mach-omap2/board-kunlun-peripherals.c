@@ -107,6 +107,27 @@ struct platform_device kunlun_backlight_device = {
 };
 #endif
 
+/** UGlee begin **/
+#ifdef CONFIG_BACKLIGHT_OMAP3PWM
+
+static struct generic_bl_info puma_backlight_data = {
+	.name = "lcd",
+	.max_intensity = 100;
+	.default_intensity = 30,
+};
+
+struct platform_device puma_backlight_device = {
+	.name	= "bl_omap3pwm",
+	.id	= -1,
+	.dev	= {
+		.platform_data = &puma_backlight_data,
+	},
+};
+
+#endif
+/** UGlee end **/
+
+
 #ifdef CONFIG_WL127X_RFKILL
 static struct wl127x_rfkill_platform_data wl127x_plat_data = {
 	.bt_nshutdown_gpio = 109, 	/* Bluetooth Enable GPIO */
@@ -236,8 +257,8 @@ static struct regulator_init_data kunlun_vmmc2 = {
 /* VSIM for OMAP VDD_MMC1A (i/o for DAT4..DAT7) */
 static struct regulator_init_data kunlun_vsim = {
 	.constraints = {
-		.min_uV			= 3000000,
-		.max_uV			= 3000000,
+		.min_uV			= 1800000,	/** changed from 3000000 **/
+		.max_uV			= 1800000,	/** changed from 3000000 **/
 		.valid_modes_mask	= REGULATOR_MODE_NORMAL
 					| REGULATOR_MODE_STANDBY,
 		.valid_ops_mask		= REGULATOR_CHANGE_VOLTAGE
