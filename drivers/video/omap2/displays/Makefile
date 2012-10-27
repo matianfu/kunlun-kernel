@@ -11,3 +11,4 @@ obj-$(CONFIG_PANEL_ACX565AKM) += panel-acx565akm.o
 obj-$(CONFIG_PANEL_SIL9022) += panel_sil9022.o
 obj-$(CONFIG_PANEL_KUNLUN_RM68041) += panel-kunlun-rm68041.o
 obj-$(CONFIG_PANEL_KUNLUN_N710E_RM68041) += panel-kunlun-n710e-rm68041.o
+obj-$(CONFIG_PANEL_PUMA_LG) += panel-puma-lg.o

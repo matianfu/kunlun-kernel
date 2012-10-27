@@ -27,6 +27,8 @@
 *.img
 *.swp
 
+.config.old
+
 .missing-syscalls.d
 
 .tmp_versions

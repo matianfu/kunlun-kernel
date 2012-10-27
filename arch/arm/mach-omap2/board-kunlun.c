@@ -852,7 +852,6 @@ extern int usb_ohci_init(void);
 #endif
 static void __init omap_kunlun_init(void)
 {
-	printk(KERN_ERR "---- omap_kunkun_init ----- begin ---------------------------------------------------------------------------\n");
 	omap3_mux_init(board_mux, OMAP_PACKAGE_CBP);
 	config_wlan_mux();
 	kunlun_peripherals_init();
@@ -866,7 +865,7 @@ static void __init omap_kunlun_init(void)
 	// twl5030_pwm1_test();
 
 	// UGlee, dirty job
-	vaux1_control(1);
+	// vaux1_control(1);
 	omap_mux_init_gpio(64, OMAP_PIN_OUTPUT);
 	omap_mux_init_gpio(109, OMAP_PIN_OUTPUT);
 	omap_mux_init_gpio(161, OMAP_PIN_OUTPUT);
@@ -874,7 +873,6 @@ static void __init omap_kunlun_init(void)
 
 	/** UGlee, quick fix for gpio request fail */
         // cbp_pin_init();
-
 
 #ifdef CONFIG_USB_OHCI_HCD_OMAP3_LEGACY
         usb_ohci_init();
@@ -897,7 +895,7 @@ static void __init omap_kunlun_init(void)
 	kunlun_init_vibrator();
 #endif
 
-	printk("---- omap_kunlun_init ---- end --------------------------------------------------------------------------------\n");
+	// printk("---- omap_kunlun_init ---- end --------------------------------------------------------------------------------\n");
 }
 
 /* must be called after omap2_common_pm_init() */

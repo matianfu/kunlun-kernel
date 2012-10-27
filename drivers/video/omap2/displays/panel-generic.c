@@ -22,7 +22,6 @@
 
 #include <plat/display.h>
 
-#if 0	/** original backup **/
 static struct omap_video_timings generic_panel_timings = {
 	/* 640 x 480 @ 60 Hz  Reduced blanking VESA CVT 0.31M3-R */
 	.x_res		= 640,
@@ -34,21 +33,6 @@ static struct omap_video_timings generic_panel_timings = {
 	.vfp		= 3,
 	.vsw		= 4,
 	.vbp		= 7,
-};
-#endif
-
-static struct omap_video_timings generic_panel_timings = {
-
-	.x_res		= 1024,
-	.y_res		= 600,
-	.pixel_clock	= 26000,
-	.hfp		= 160,
-	.hsw		= 80,
-	.hbp		= 160,
-	.vfp		= 12,
-	.vsw		= 6,
-	.vbp		= 23,
-
 };
 
 static int generic_panel_power_on(struct omap_dss_device *dssdev)
@@ -79,32 +63,10 @@ static void generic_panel_power_off(struct omap_dss_device *dssdev)
 
 	omapdss_dpi_display_disable(dssdev);
 }
-/**
-static int otter1_panel_probe(struct omap_dss_device *dssdev)
-{
-	printk(KERN_INFO "Otter1 LCD probe called\n");
-	dssdev->panel.config	= OMAP_DSS_LCD_TFT | OMAP_DSS_LCD_IVS |
-				  OMAP_DSS_LCD_IHS;
-	dssdev->panel.timings	= otter1_panel_timings;
 
-	omap_writel(0x00020000,0x4a1005cc); //PCLK impedance
-	gpio_request(175, "LCD_VENDOR0");
-	gpio_request(176, "LCD_VENDOR1");
-	gpio_direction_input(175);
-	gpio_direction_input(176);
-    gpio_request(47, "3V_ENABLE");
-    gpio_request(37, "OMAP_RGB_SHTDN");
-
-    //Already done in uboot
-    //otter1_panel_power_on();
-	mutex_init(&lock_power_on);
-	mutex_init(&lock_panel);
-	return 0;
-}
-*/
 static int generic_panel_probe(struct omap_dss_device *dssdev)
 {
-	dssdev->panel.config = OMAP_DSS_LCD_TFT | OMAP_DSS_LCD_IVS | OMAP_DSS_LCD_IHS;
+	dssdev->panel.config = OMAP_DSS_LCD_TFT;
 	dssdev->panel.timings = generic_panel_timings;
 
 	return 0;

@@ -28,10 +28,10 @@ static void puma_lcd_panel_disable(struct omap_dss_device *dssdev) {
 /** omap dss device **/
 static struct omap_dss_device puma_lcd_panel_device = {
         .name = "lcd",
-        .driver_name = "generic_panel",
+        .driver_name = "lg_panel",
         .type = OMAP_DISPLAY_TYPE_DPI,
         .phy.dpi.data_lines = 24,
-        .ctrl.pixel_size = 16,
+        .ctrl.pixel_size = 24,
         .platform_enable = puma_lcd_panel_enable,
         .platform_disable = puma_lcd_panel_disable,
 };
