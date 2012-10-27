@@ -28,6 +28,8 @@
 #include <asm/mach/arch.h>
 #include <asm/mach/map.h>
 
+#include <linux/pwm_backlight.h>
+
 #include <plat/common.h>
 #include <plat/usb.h>
 #include <plat/control.h>
@@ -282,7 +284,36 @@ static struct platform_device kunlun_headset_switch_device = {
 	}
 };
 
+/**
+struct platform_pwm_backlight_data {
+        int pwm_id;
+        unsigned int max_brightness;
+        unsigned int dft_brightness;
+        unsigned int pwm_period_ns;
+        int (*init)(struct device *dev);
+        int (*notify)(struct device *dev, int brightness);
+        void (*exit)(struct device *dev);
+}; **/
+
+static struct platform_pwm_backlight_data puma_pwm_bl_platform_data = {
+	.pwm_id 	= 1,
+	.max_brightness = 100,
+	.dft_brightness = 20,
+	.pwm_period_ns	= 100,
+};
+
+static struct platform_device puma_pwm_bl_device = {
+	.name		= "pwm-backlight",
+	.id		= -1,
+	.dev		= {
+		.platform_data = &puma_pwm_bl_platform_data,
+	},
+};
+
 static struct platform_device *kunlun_board_devices[] __initdata = {
+
+	&puma_pwm_bl_device,
+
 #ifdef CONFIG_BACKLIGHT_CAT3637
 	&kunlun_backlight_device,
 #endif
@@ -291,6 +322,7 @@ static struct platform_device *kunlun_board_devices[] __initdata = {
 #endif
 	&kunlun_headset_switch_device,
 	&kunlun_button_led_device,
+	
 };
 
 static struct omap2_hsmmc_info mmc[] __initdata = {

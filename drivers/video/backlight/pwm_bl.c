@@ -72,6 +72,8 @@ static int pwm_backlight_probe(struct platform_device *pdev)
 	struct pwm_bl_data *pb;
 	int ret;
 
+	printk("pwm_backlight_probe() -------------------------------------------------------------------------------------- \n");
+
 	if (!data) {
 		dev_err(&pdev->dev, "failed to find platform data\n");
 		return -EINVAL;
@@ -104,8 +106,14 @@ static int pwm_backlight_probe(struct platform_device *pdev)
 
 	memset(&props, 0, sizeof(struct backlight_properties));
 	props.max_brightness = data->max_brightness;
-	bl = backlight_device_register(dev_name(&pdev->dev), &pdev->dev, pb,
+	// bl = backlight_device_register(dev_name(&pdev->dev), &pdev->dev, pb,
+	// 			       &pwm_backlight_ops, &props);
+	bl = backlight_device_register("lcd", &pdev->dev, pb,
 				       &pwm_backlight_ops, &props);
+
+
+	printk("dev_name(&pdev->dev) is %s\n", dev_name(&pdev->dev));
+
 	if (IS_ERR(bl)) {
 		dev_err(&pdev->dev, "failed to register backlight\n");
 		ret = PTR_ERR(bl);
@@ -116,6 +124,8 @@ static int pwm_backlight_probe(struct platform_device *pdev)
 	backlight_update_status(bl);
 
 	platform_set_drvdata(pdev, bl);
+
+	printk("pwm_backlight_probe() finished ...\n");
 	return 0;
 
 err_bl:
