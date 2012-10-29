@@ -27,6 +27,7 @@
 *.img
 *.swp
 
+.config
 .config.old
 
 .missing-syscalls.d
