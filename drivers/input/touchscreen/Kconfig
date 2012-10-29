@@ -632,4 +632,10 @@ config TOUCHSCREEN_FT5X0X
           To compile this driver as a module, choose M here: the
           module will be called FT5X0X, which support multil-touch protocol
 
+config TOUCHSCREEN_SSD253X_CT9098
+	tristate "SSD253x based Capacitive Touchscreen, Truly CT-9098"
+	depends on I2C
+	help
+	  Say Y here if you have CT-9098
+
 endif

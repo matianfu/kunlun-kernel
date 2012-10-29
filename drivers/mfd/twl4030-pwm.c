@@ -60,6 +60,7 @@ int pwm_config(struct pwm_device *pwm, int duty_ns, int period_ns)
 #if defined (TWL4030_PWM_DEBUG)
 
 	printk("pwm_config...........................................................................\n");
+	printk("pwm_id is %d, label is %s, duty is %d, period is %d.\n", pwm->pwm_id, pwm->label, duty_ns, period_ns);
 
 #endif /** debug **/
 
@@ -88,7 +89,16 @@ int pwm_config(struct pwm_device *pwm, int duty_ns, int period_ns)
 	}
 	
 	/** write ontime **/
-	ontime = period_ns - duty_ns; 
+	ontime = period_ns - duty_ns / 2; 
+	if (ontime == period_ns) {	// This is a dirty and quick fix, TODO
+		ontime = period_ns - 1;
+	}
+
+#if defined (TWL4030_PWM_DEBUG)
+
+	printk("pwm_on is set to %d \n", ontime);
+#endif
+
 	if (id == 0) {
 		ret = twl_i2c_write_u8(TWL4030_MODULE_PWM0, ontime, REG_PWM0ON);
 	}
@@ -208,6 +218,7 @@ struct pwm_device *pwm_request(int pwm_id, const char *label)
 #if defined (TWL4030_PWM_DEBUG)
 
 	printk("pwm_request...........................................................................\n");
+	printk("pwm_id is %d, label is %s\n", pwm_id, label);
 
 #endif /** debug **/
 

@@ -33,7 +33,7 @@ static struct omap_video_timings lg_panel_timings = {
 
 	.x_res		= 1024,
 	.y_res		= 600,
-	.pixel_clock	= 24000,
+	.pixel_clock	= 18000,
 	.hfp		= 160,
 	.hsw		= 80,
 	.hbp		= 160,
