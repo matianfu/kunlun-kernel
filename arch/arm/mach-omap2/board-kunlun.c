@@ -119,7 +119,7 @@ int vaux1_control(int enable)
 				regulator_disable(vaux1_regulator);
 }
 
-#if defined(CONFIG_SENSORS_ADBS_A320)
+// #if defined(CONFIG_SENSORS_ADBS_A320)
 struct regulator *vaux2_regulator = NULL;
 
 int vaux2_control(int enable)
@@ -140,7 +140,7 @@ int vaux2_control(int enable)
 	return ret;
 }
 
-#endif
+// #endif
 
 #if  defined(CONFIG_SENSORS_ADBS_A320)
 
@@ -343,6 +343,15 @@ static struct omap_board_mux board_mux[] __initdata = {
 	OMAP3_MUX(CSI2_DY0,	OMAP_MUX_MODE0 | OMAP_PIN_INPUT),	/* CSI2_DATA_LANE0_N */
 	OMAP3_MUX(CSI2_DX1,	OMAP_MUX_MODE0 | OMAP_PIN_INPUT),	/* CSI2_DATA_LANE1_P */
 	OMAP3_MUX(CSI2_DY1,	OMAP_MUX_MODE0 | OMAP_PIN_INPUT),	/* CSI2_DATA_LANE1_N */
+
+	// SDMMC1
+	OMAP3_MUX(SDMMC1_CLK, 	OMAP_MUX_MODE0 | OMAP_PIN_INPUT), 		/* MMC1_CLK, SD CARD */
+	OMAP3_MUX(SDMMC1_CMD, 	OMAP_MUX_MODE0 | OMAP_PIN_OUTPUT), 		/* MMC1_CMD, SD CARD */
+	OMAP3_MUX(SDMMC1_DAT0, 	OMAP_MUX_MODE0 | OMAP_PIN_INPUT_PULLUP), 	/* MMC1_DAT0, SD CARD */
+	OMAP3_MUX(SDMMC1_DAT1, 	OMAP_MUX_MODE0 | OMAP_PIN_INPUT_PULLUP), 	/* MMC1_DAT1, SD CARD */
+	OMAP3_MUX(SDMMC1_DAT2, 	OMAP_MUX_MODE0 | OMAP_PIN_INPUT_PULLUP), 	/* MMC1_DAT2, SD CARD */
+	OMAP3_MUX(SDMMC1_DAT3, 	OMAP_MUX_MODE0 | OMAP_PIN_INPUT_PULLUP), 	/* MMC1_DAT3, SD CARD */
+ 
 
 	// SIM I/O
 	OMAP3_MUX(SIM_IO,	OMAP_MUX_MODE4 | OMAP_PIN_OUTPUT),	/* MDM_KEYON */
@@ -852,8 +861,11 @@ extern int usb_ohci_init(void);
 #endif
 static void __init omap_kunlun_init(void)
 {
+	// mux table
 	omap3_mux_init(board_mux, OMAP_PACKAGE_CBP);
-	config_wlan_mux();
+
+	// simple not right
+	// config_wlan_mux();
 	kunlun_peripherals_init();
 	kunlun_flash_init();
 
@@ -866,10 +878,10 @@ static void __init omap_kunlun_init(void)
 
 	// UGlee, dirty job
 	// vaux1_control(1);
-	omap_mux_init_gpio(64, OMAP_PIN_OUTPUT);
-	omap_mux_init_gpio(109, OMAP_PIN_OUTPUT);
-	omap_mux_init_gpio(161, OMAP_PIN_OUTPUT);
-	omap_mux_init_gpio(McBSP3_BT_GPIO, OMAP_PIN_OUTPUT);
+	// omap_mux_init_gpio(64, OMAP_PIN_OUTPUT);
+	// omap_mux_init_gpio(109, OMAP_PIN_OUTPUT);
+	// omap_mux_init_gpio(161, OMAP_PIN_OUTPUT);
+	// omap_mux_init_gpio(McBSP3_BT_GPIO, OMAP_PIN_OUTPUT);
 
 	/** UGlee, quick fix for gpio request fail */
         // cbp_pin_init();
