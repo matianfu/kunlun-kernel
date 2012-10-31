@@ -195,6 +195,8 @@ static struct platform_device kunlun_button_led_device = {
 };
 
 static int kunlun_board_keymap[] = {
+
+/**
 	KEY(3, 2, KEY_BACK),
 	KEY(3, 1, KEY_HOME),
 	KEY(3, 3, KEY_ENTER),
@@ -202,6 +204,13 @@ static int kunlun_board_keymap[] = {
 	KEY(4, 3, KEY_MENU),
 	KEY(2, 0, KEY_VOLUMEUP),
 	KEY(2, 1, KEY_VOLUMEDOWN)
+**/
+
+// defined in matrix_keypad.h
+// #define KEY(row, col, val)
+	KEY(1, 0, KEY_HOME),	// S1001
+	KEY(1, 1, KEY_BACK),	// S1002
+	KEY(1, 2, KEY_MENU),	// S1003
 };
 
 static struct matrix_keymap_data kunlun_board_map_data = {
