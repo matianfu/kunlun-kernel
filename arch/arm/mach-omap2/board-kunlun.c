@@ -759,7 +759,8 @@ static void __init cbp_pin_init(void)
 
 static const struct usbhs_omap_platform_data usbhs_pdata __initconst = {
 	.port_mode[0]		= OMAP_USBHS_PORT_MODE_UNUSED,
-	.port_mode[1]		= OMAP_OHCI_PORT_MODE_TLL_2PIN_DATSE0,
+	// .port_mode[1]		= OMAP_OHCI_PORT_MODE_TLL_2PIN_DATSE0,
+	.port_mode[1]		= OMAP_EHCI_PORT_MODE_PHY,
 	.port_mode[2]		= OMAP_USBHS_PORT_MODE_UNUSED,
 	.phy_reset		= false,
 	.reset_gpio_port[0]	= -EINVAL,
@@ -888,8 +889,10 @@ static void __init omap_kunlun_init(void)
 
 #ifdef CONFIG_USB_OHCI_HCD_OMAP3_LEGACY
         usb_ohci_init();
+	printk("omap_kunlun_init, usb_ohci_init() called.");
 #else
 	usb_uhhtll_init(&usbhs_pdata);
+	printk("omap_kunlun_init, usb_uhhtll_init() called.");
 #endif
 	sr_class1p5_init();
 
