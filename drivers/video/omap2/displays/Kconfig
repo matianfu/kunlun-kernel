@@ -3,7 +3,6 @@ menu "OMAP2/3 Display Device Drivers"
 
 config PANEL_GENERIC
         tristate "Generic Panel"
-	default y
         help
 	  Generic panel driver.
 	  Used for DVI output for Beagle and OMAP3 SDP.
@@ -11,7 +10,6 @@ config PANEL_GENERIC
 config PANEL_SHARP_LS037V7DW01
         tristate "Sharp LS037V7DW01 LCD Panel"
         depends on OMAP2_DSS
-	default y
         select BACKLIGHT_CLASS_DEVICE
         help
           LCD Panel used in TI's SDP3430 and EVM boards
@@ -21,7 +19,7 @@ config PANEL_SHARP_LQ043T1DG01
         depends on OMAP2_DSS
         help
 
-          LCD Panel used in TI's OMAP3517 EVM boards
+          LCD Panel used in TI OMAP3517 EVM boards
 
 config PANEL_PICO_DLP
         tristate "OMAP PICO DLP Panel"
@@ -38,21 +36,18 @@ config PANEL_TAAL
 config PANEL_NEC_NL8048HL11_01B
         tristate "NEC NL8048HL11-01B Panel"
 	depends on OMAP2_DSS
-	default y
         help
           LCD Panel used in the Zoom boards
 
 config PANEL_KUNLUN_RM68041
         tristate "VIA TELECOM KUNLUN Panel used RM68041 as Driver IC"
 	depends on OMAP2_DSS
-	default y
         help
           LCD Panel(Driver IC is RM68041) used in the VIA TELECOM KUNLUN
 
 config PANEL_KUNLUN_N710E_RM68041
         tristate "KUNLUN N710E Panel used RM68041 as Driver IC"
 	depends on OMAP2_DSS
-	default y
         help
           LCD Panel(Driver IC is RM68041) used in the KUNLUN N710E
 
