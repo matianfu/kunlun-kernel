@@ -171,11 +171,19 @@
 #if defined(CONFIG_USB_EHCI_HCD) || defined(CONFIG_USB_EHCI_HCD_MODULE) || \
 	defined(CONFIG_USB_OHCI_HCD) || defined(CONFIG_USB_OHCI_HCD_MODULE)
 
+// These seems to be defined for OMAP44XX
+// #define USB_UHH_HS_HWMODNAME				"usb_uhh_hs"
+// #define USB_TLL_HS_HWMODNAME				"usb_tll_hs"
+// #define USBHS_OHCI_HWMODNAME				"usbhs_ohci"
+// #define USBHS_EHCI_HWMODNAME				"usbhs_ehci"
 
-#define USB_UHH_HS_HWMODNAME				"usb_uhh_hs"
-#define USB_TLL_HS_HWMODNAME				"usb_tll_hs"
+// These are defined for OMAP3xxx
+#define USB_UHH_HS_HWMODNAME				"usbhs_uhh"
+#define USB_TLL_HS_HWMODNAME				"usbhs_tll"
 #define USBHS_OHCI_HWMODNAME				"usbhs_ohci"
 #define USBHS_EHCI_HWMODNAME				"usbhs_ehci"
+
+
 
 /* EHCI/OHCI state events */
 #define USBHS_OHCI_LOADED	0
