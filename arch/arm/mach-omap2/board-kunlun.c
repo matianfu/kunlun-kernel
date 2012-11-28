@@ -862,6 +862,7 @@ extern int usb_ohci_init(void);
 #endif
 static void __init omap_kunlun_init(void)
 {
+	int ret;
 	// mux table
 	omap3_mux_init(board_mux, OMAP_PACKAGE_CBP);
 
@@ -910,7 +911,15 @@ static void __init omap_kunlun_init(void)
 	kunlun_init_vibrator();
 #endif
 
-	// printk("---- omap_kunlun_init ---- end --------------------------------------------------------------------------------\n");
+	/** experimental **/
+	/** pull-up usb-phy chip select, etk_d1, gpio_15 */
+	ret = gpio_request(15, "ulpi_cs");
+	if (ret < 0) {
+		pr_err("ulpi_cs gpio request failed.");
+		return;
+	}
+
+	gpio_direction_output(15, 1);
 }
 
 /* must be called after omap2_common_pm_init() */
