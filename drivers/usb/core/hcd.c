@@ -456,6 +456,9 @@ static int rh_call_control (struct usb_hcd *hcd, struct urb *urb)
 		goto error;
 
 	urb->actual_length = 0;
+
+	printk("In func: %s, file: %s, line: %d \n", __func__, __FILE__, __LINE__);
+	printk("typeReq is 0x%04x \n", typeReq); 
 	switch (typeReq) {
 
 	/* DEVICE REQUESTS */
@@ -583,6 +586,7 @@ static int rh_call_control (struct usb_hcd *hcd, struct urb *urb)
 	/* CLASS REQUESTS (and errors) */
 
 	default:
+		printk("case -> default \n");
 		/* non-generic request */
 		switch (typeReq) {
 		case GetHubStatus:
@@ -593,6 +597,7 @@ static int rh_call_control (struct usb_hcd *hcd, struct urb *urb)
 			len = sizeof (struct usb_hub_descriptor);
 			break;
 		}
+		printk("calling hcd driver hub_control. \n");
 		status = hcd->driver->hub_control (hcd,
 			typeReq, wValue, wIndex,
 			tbuf, wLength);

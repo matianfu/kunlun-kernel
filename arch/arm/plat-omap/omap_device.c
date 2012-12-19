@@ -408,14 +408,17 @@ struct omap_device *omap_device_build_ss(const char *pdev_name, int pdev_id,
 	if (!pdata && pdata_len > 0)
 		return ERR_PTR(-EINVAL);
 
-	pr_debug("omap_device: %s: building with %d hwmods\n", pdev_name,
+	printk("omap_device: %s: building with %d hwmods\n", pdev_name,
 		 oh_cnt);
 
 	od = kzalloc(sizeof(struct omap_device), GFP_KERNEL);
 	if (!od)
 		return ERR_PTR(-ENOMEM);
 
+	printk("omap_device allocated.\n");
+
 	od->hwmods_cnt = oh_cnt;
+	printk("hwmods_cnt is %d \n", oh_cnt);
 
 	hwmods = kzalloc(sizeof(struct omap_hwmod *) * oh_cnt,
 			 GFP_KERNEL);
@@ -476,7 +479,7 @@ odbs_exit2:
 odbs_exit1:
 	kfree(od);
 
-	pr_err("omap_device: %s: build failed (%d)\n", pdev_name, ret);
+	printk("omap_device: %s: build failed (%d)\n", pdev_name, ret);
 
 	return ERR_PTR(ret);
 }

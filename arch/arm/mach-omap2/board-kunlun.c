@@ -43,7 +43,7 @@
 #endif
 
 #ifdef CONFIG_MACH_OMAP3_VIBRAOTR
-void __init kunlun_init_vibrator(void);
+// void __init kunlun_init_vibrator(void);
 #endif
 
 #define McBSP3_BT_GPIO 22
@@ -104,8 +104,6 @@ static void twl5030_pwm1_test(void) {
 int vaux1_control(int enable)
 {
 	
-	printk(KERN_ERR "vaux1_control, enabled = %d -------------------------------------------------------------------------------------------------------------------\n", enable);
-
 	if (!vaux1_regulator)
 		vaux1_regulator = regulator_get(NULL, "vcc_vaux1");
 
@@ -144,6 +142,7 @@ int vaux2_control(int enable)
 
 #if  defined(CONFIG_SENSORS_ADBS_A320)
 
+#if 0
 int init_ofn_hw(void)
 {
 	int ret = 0;
@@ -192,6 +191,7 @@ int init_ofn_hw(void)
 
 	return ret;
 }
+#endif
 
 #endif
 
@@ -271,10 +271,14 @@ static void __init omap_kunlun_init_irq(void)
 {
 	omap_board_config = kunlun_config;
 	omap_board_config_size = ARRAY_SIZE(kunlun_config);
+	printk("omap_kunlun_init_irq ..................................................1\n");
 	omap2_init_common_hw(h8mbx00u0mer0em_sdrc_params,
 			h8mbx00u0mer0em_sdrc_params);
+	printk("omap_kunlun_init_irq ..................................................2\n");
 	omap2_gp_clockevent_set_gptimer(1);
+	printk("omap_kunlun_init_irq ..................................................3\n");
 	omap_init_irq();
+	printk("omap_kunlun_init_irq ..................................................4\n");
 }
 
 #ifdef CONFIG_OMAP_MUX
@@ -386,8 +390,8 @@ static struct omap_board_mux board_mux[] __initdata = {
 	OMAP3_MUX(SDMMC2_DAT4,	OMAP_MUX_MODE7 | OMAP_PIN_INPUT),	/* unused */
 
 	// UART1, connect to CID Card Scanner, with level shifter and gpio
-	OMAP3_MUX(UART1_TX,	OMAP_MUX_MODE0 | OMAP_PIN_OUTPUT),	/* UART1_TX */
-	OMAP3_MUX(UART1_RX,	OMAP_MUX_MODE0 | OMAP_PIN_INPUT),	/* UART1_RX */
+	OMAP3_MUX(UART1_TX,	OMAP_MUX_MODE4 | OMAP_PIN_OUTPUT),	/* UART1_TX, in test mode, as gpio */
+	OMAP3_MUX(UART1_RX,	OMAP_MUX_MODE7 | OMAP_PIN_INPUT),	/* UART1_RX */
 	OMAP3_MUX(UART1_CTS,	OMAP_MUX_MODE4 | OMAP_PIN_OUTPUT),	/* UART1_EN, GPIO_150 */
 	OMAP3_MUX(UART1_RTS,	OMAP_MUX_MODE4 | OMAP_PIN_OUTPUT),	/* MDM_RST, GPIO_149, active high? low? */
 	
@@ -435,8 +439,8 @@ static struct omap_board_mux board_mux[] __initdata = {
 	OMAP3_MUX(I2C4_SCL,	OMAP_MUX_MODE0 | OMAP_PIN_INPUT_PULLUP),
 	OMAP3_MUX(I2C4_SDA,	OMAP_MUX_MODE0 | OMAP_PIN_INPUT_PULLUP),
 	
-	//HDQ_SIO
-	OMAP3_MUX(HDQ_SIO,	OMAP_MUX_MODE7 | OMAP_PIN_INPUT),	/* unused in kernel */
+	//HDQ_SIO, as ULPI_RESET
+	OMAP3_MUX(HDQ_SIO,	OMAP_MUX_MODE4 | OMAP_PIN_INPUT_PULLUP),	/* unused in kernel */
 
 	// MCSPI1
 	OMAP3_MUX(MCSPI1_CLK,	OMAP_MUX_MODE4 | OMAP_PIN_INPUT_PULLUP),/* LCD_SCL, GPIO_171 */
@@ -445,14 +449,14 @@ static struct omap_board_mux board_mux[] __initdata = {
 	OMAP3_MUX(MCSPI1_CS0,	OMAP_MUX_MODE4 | OMAP_PIN_INPUT_PULLUP),/* LCD_CS, GPIO_174, active low */
 	OMAP3_MUX(MCSPI1_CS1,	OMAP_MUX_MODE3 | OMAP_PIN_OUTPUT),	/* WLAN_MMC3_CMD */
 	OMAP3_MUX(MCSPI1_CS2,	OMAP_MUX_MODE3 | OMAP_PIN_INPUT),	/* WLAN_MMC3_CLK */
-	OMAP3_MUX(MCSPI1_CS3,	OMAP_MUX_MODE3 | OMAP_PIN_INPUT),	/* HSUSB2_DATA2 */
+	OMAP3_MUX(MCSPI1_CS3,	OMAP_MUX_MODE3 | OMAP_PIN_INPUT_PULLDOWN),	/* HSUSB2_DATA2 */
 
 	// MCSPI2
-	OMAP3_MUX(MCSPI2_CLK,	OMAP_MUX_MODE3 | OMAP_PIN_INPUT),	/* HSUSB2_DATA7 */
-	OMAP3_MUX(MCSPI2_SIMO,	OMAP_MUX_MODE3 | OMAP_PIN_INPUT),	/* HSUSB2_DATA4 */
-	OMAP3_MUX(MCSPI2_SOMI,	OMAP_MUX_MODE3 | OMAP_PIN_INPUT),	/* HSUSB2_DATA5 */
-	OMAP3_MUX(MCSPI2_CS0,	OMAP_MUX_MODE3 | OMAP_PIN_INPUT),	/* HSUSB2_DATA6 */
-	OMAP3_MUX(MCSPI2_CS1,	OMAP_MUX_MODE3 | OMAP_PIN_INPUT),	/* HSUSB2_DATA3 */
+	OMAP3_MUX(MCSPI2_CLK,	OMAP_MUX_MODE3 | OMAP_PIN_INPUT_PULLDOWN),	/* HSUSB2_DATA7 */
+	OMAP3_MUX(MCSPI2_SIMO,	OMAP_MUX_MODE3 | OMAP_PIN_INPUT_PULLDOWN),	/* HSUSB2_DATA4 */
+	OMAP3_MUX(MCSPI2_SOMI,	OMAP_MUX_MODE3 | OMAP_PIN_INPUT_PULLDOWN),	/* HSUSB2_DATA5 */
+	OMAP3_MUX(MCSPI2_CS0,	OMAP_MUX_MODE3 | OMAP_PIN_INPUT_PULLDOWN),	/* HSUSB2_DATA6 */
+	OMAP3_MUX(MCSPI2_CS1,	OMAP_MUX_MODE3 | OMAP_PIN_INPUT_PULLDOWN),	/* HSUSB2_DATA3 */
 	
 	// UART2, connect to bluetooth
 	OMAP3_MUX(UART2_CTS,	OMAP_MUX_MODE0 | OMAP_PIN_INPUT),	/* BT_UART_CTS_N */
@@ -484,7 +488,7 @@ static struct omap_board_mux board_mux[] __initdata = {
 	OMAP3_MUX(ETK_CLK,	OMAP_MUX_MODE4 | OMAP_PIN_INPUT),	/* W_PCM_CLK, GPIO_12, listen to Modem in off mode */
 	OMAP3_MUX(ETK_CTL,	OMAP_MUX_MODE4 | OMAP_PIN_INPUT),	/* VFAULT_N, GPIO_13, TODO pull? */
 	OMAP3_MUX(ETK_D0,	OMAP_MUX_MODE4 | OMAP_PIN_INPUT),	/* OVP_DIR_N, GPIO_14, TODO pull? or drive? */
-	OMAP3_MUX(ETK_D1,	OMAP_MUX_MODE4 | OMAP_PIN_INPUT),	/* ULPI_CS, GPIO_15, TODO pull? */
+	OMAP3_MUX(ETK_D1,	OMAP_MUX_MODE4 | OMAP_PIN_INPUT_PULLDOWN),	/* ULPI_CS, GPIO_15, TODO pull? */
 	OMAP3_MUX(ETK_D2,	OMAP_MUX_MODE4 | OMAP_PIN_INPUT),	/* LCD_BL_EN2, GPIO_16, TODO used? */
 	OMAP3_MUX(ETK_D3,	OMAP_MUX_MODE2 | OMAP_PIN_INPUT),	/* WLAN_MMC3_DATA3, TODO pull? */
 	OMAP3_MUX(ETK_D4,	OMAP_MUX_MODE2 | OMAP_PIN_INPUT),	/* WLAN_MMC3_DATA0 */
@@ -493,13 +497,15 @@ static struct omap_board_mux board_mux[] __initdata = {
 	OMAP3_MUX(ETK_D7,	OMAP_MUX_MODE4 | OMAP_PIN_OUTPUT),	/* USB_SW_EN, GPIO_21 */
 	OMAP3_MUX(ETK_D8,	OMAP_MUX_MODE4 | OMAP_PIN_OUTPUT),	/* W_PCM_EN, GPIO_22 */
 	OMAP3_MUX(ETK_D9,	OMAP_MUX_MODE4 | OMAP_PIN_INPUT),	/* VREG_MSME, GPIO_23 */
-	OMAP3_MUX(ETK_D10,	OMAP_MUX_MODE3 | OMAP_PIN_OUTPUT),	/* HSUSB2_CLK */
-	OMAP3_MUX(ETK_D11,	OMAP_MUX_MODE3 | OMAP_PIN_OUTPUT),	/* HSUSB2_STP */
-	OMAP3_MUX(ETK_D12,	OMAP_MUX_MODE3 | OMAP_PIN_INPUT),	/* HSUSB2_DIR */
-	OMAP3_MUX(ETK_D13,	OMAP_MUX_MODE3 | OMAP_PIN_INPUT),	/* HSUSB2_NXT */
-	OMAP3_MUX(ETK_D14,	OMAP_MUX_MODE3 | OMAP_PIN_INPUT),	/* HSUSB2_DATA0 */
-	OMAP3_MUX(ETK_D15,	OMAP_MUX_MODE3 | OMAP_PIN_INPUT),	/* HSUSB2_DATA1 */
-	
+	OMAP3_MUX(ETK_D10,	OMAP_MUX_MODE3 | OMAP_PIN_INPUT_PULLDOWN),	/* HSUSB2_CLK */
+	OMAP3_MUX(ETK_D11,	OMAP_MUX_MODE3 | OMAP_PIN_OUTPUT),		/* HSUSB2_STP */
+	OMAP3_MUX(ETK_D12,	OMAP_MUX_MODE3 | OMAP_PIN_INPUT_PULLDOWN),	/* HSUSB2_DIR */
+	OMAP3_MUX(ETK_D13,	OMAP_MUX_MODE3 | OMAP_PIN_INPUT_PULLDOWN),	/* HSUSB2_NXT */
+	OMAP3_MUX(ETK_D14,	OMAP_MUX_MODE3 | OMAP_PIN_INPUT_PULLDOWN),	/* HSUSB2_DATA0 */
+	OMAP3_MUX(ETK_D15,	OMAP_MUX_MODE3 | OMAP_PIN_INPUT_PULLDOWN),	/* HSUSB2_DATA1 */
+
+	OMAP3_MUX(JTAG_EMU0,	OMAP_MUX_MODE4 | OMAP_PIN_INPUT_PULLUP),/* JTAG EMU0, as gpio 11, for test **/
+	OMAP3_MUX(JTAG_EMU1,	OMAP_MUX_MODE4 | OMAP_PIN_INPUT_PULLUP),/* JTAG EMU0, as gpio 31, for test **/
 #if 0
 
 
@@ -717,6 +723,7 @@ static void __init cbp_pin_init(void)
 #ifdef CONFIG_BOOTCASE_VIATELECOM
     /*boot by charger, not need to power on CP, set all the pin to be input gpio to avoid power consume*/
     if(!strncmp(get_bootcase(), "charger", strlen("charger"))){
+#if 0
         omap_mux_init_gpio(16, OMAP_PIN_INPUT_PULLDOWN);/*GPS_PWR_EN GPIO_16*/
         gpio_direction_input(16);
         omap_mux_init_gpio(21, OMAP_PIN_INPUT_PULLDOWN);/*C_USB_EN GPIO_21*/
@@ -741,10 +748,12 @@ static void __init cbp_pin_init(void)
         gpio_direction_input(177);
         omap_mux_init_signal("etk_d15.gpio_29", OMAP_PIN_INPUT);
         gpio_direction_input(29);
+#endif
     }
     else
 #endif
     {
+#if 0
         gpio_direction_output(173, 0);/*MDM_SRV2 to low*/
         /*Note: gpio_126 ~ gpio_129 is powered by VSIM 3.0V, which is extern gpio in OMPA3430 and can only configged by regiser write*/
         omap_ctrl_writew(OMAP_MUX_MODE4 | OMAP_PIN_OUTPUT , 0xa56);/*MODEM_PWR_EN, GPIO_126*/
@@ -754,17 +763,17 @@ static void __init cbp_pin_init(void)
         /*config the ohci usb pin*/
         omap_mux_init_signal("mcspi1_cs3.mm2_txdat", OMAP_PIN_INPUT); /*C_USB_TXDAT, config to OHCI*/
         omap_mux_init_signal("etk_d15.mm2_txse0", OMAP_PIN_INPUT);/*C_USB_TXSE0, config to OHCI*/
+#endif
     }
 }
 
 static const struct usbhs_omap_platform_data usbhs_pdata __initconst = {
 	.port_mode[0]		= OMAP_USBHS_PORT_MODE_UNUSED,
-	// .port_mode[1]		= OMAP_OHCI_PORT_MODE_TLL_2PIN_DATSE0,
 	.port_mode[1]		= OMAP_EHCI_PORT_MODE_PHY,
 	.port_mode[2]		= OMAP_USBHS_PORT_MODE_UNUSED,
-	.phy_reset		= false,
+	.phy_reset		= true,
 	.reset_gpio_port[0]	= -EINVAL,
-	.reset_gpio_port[1]	= -EINVAL,
+	.reset_gpio_port[1]	= 11,	/* change to something... */
 	.reset_gpio_port[2]	= -EINVAL,
 };
 
@@ -908,18 +917,9 @@ static void __init omap_kunlun_init(void)
 	wl127x_vio_leakage_fix();
 
 #ifdef CONFIG_MACH_OMAP3_VIBRAOTR
-	kunlun_init_vibrator();
+	// kunlun_init_vibrator();
 #endif
 
-	/** experimental **/
-	/** pull-up usb-phy chip select, etk_d1, gpio_15 */
-	ret = gpio_request(15, "ulpi_cs");
-	if (ret < 0) {
-		pr_err("ulpi_cs gpio request failed.");
-		return;
-	}
-
-	gpio_direction_output(15, 1);
 }
 
 /* must be called after omap2_common_pm_init() */

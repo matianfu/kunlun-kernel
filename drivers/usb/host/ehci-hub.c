@@ -837,6 +837,9 @@ static int ehci_hub_control (
 		wIndex--;
 		status = 0;
 		temp = ehci_readl(ehci, status_reg);
+		printk("func: %s, file: %s, line: %d \n", __func__, __FILE__, __LINE__);
+		printk("base (ehci) is 0x%08x, offset (status_reg) is 0x%08x, ret (temp) is 0x%08x \n", 
+			ehci, status_reg, temp);
 
 		// wPortChange bits
 		if (temp & PORT_CSC)

@@ -321,16 +321,16 @@ static struct platform_device puma_pwm_bl_device = {
 
 static struct platform_device *kunlun_board_devices[] __initdata = {
 
-	&puma_pwm_bl_device,
+//	&puma_pwm_bl_device,
 
 #ifdef CONFIG_BACKLIGHT_CAT3637
-	&kunlun_backlight_device,
+//	&kunlun_backlight_device,
 #endif
 #ifdef CONFIG_WL127X_RFKILL
 	&kunlun_wl127x_device,
 #endif
-	&kunlun_headset_switch_device,
-	&kunlun_button_led_device,
+//	&kunlun_headset_switch_device,
+//	&kunlun_button_led_device,
 	
 };
 
@@ -832,7 +832,7 @@ void __init kunlun_peripherals_init(void)
 	usb_musb_init(&musb_board_data);
 
 #ifdef CONFIG_SENSORS_AKM8975	/* This macro is set by default, commented out, UGlee */
-	akm8975_dev_init();
+//	akm8975_dev_init();
 #endif
 	config_mux_mcbsp3();
 	enable_board_wakeup_source();

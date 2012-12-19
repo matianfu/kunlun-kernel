@@ -1465,6 +1465,7 @@ int omap_hwmod_init(struct omap_hwmod **ohs)
 	while (oh) {
 		if (omap_chip_is(oh->omap_chip)) {
 			r = omap_hwmod_register(oh);
+			printk("omap hwmod registered: %s \n", oh -> name);
 			WARN(r, "omap_hwmod: %s: omap_hwmod_register returned "
 			     "%d\n", oh->name, r);
 		}
@@ -1486,7 +1487,9 @@ int omap_hwmod_late_init(u8 skip_setup_idle)
 	int r;
 
 	/* XXX check return value */
+	printk("before _init_clocks\n");
 	r = omap_hwmod_for_each(_init_clocks, NULL);
+	printk("after _init_clocks\n");
 	WARN(r, "omap_hwmod: omap_hwmod_late_init(): _init_clocks failed\n");
 
 	mpu_oh = omap_hwmod_lookup(MPU_INITIATOR_NAME);
@@ -1496,7 +1499,9 @@ int omap_hwmod_late_init(u8 skip_setup_idle)
 	if (skip_setup_idle)
 		pr_debug("omap_hwmod: will leave hwmods enabled during setup\n");
 
+	printk("before _setup()\n");
 	omap_hwmod_for_each(_setup, &skip_setup_idle);
+	printk("after _setup()\n");
 
 
 	return 0;

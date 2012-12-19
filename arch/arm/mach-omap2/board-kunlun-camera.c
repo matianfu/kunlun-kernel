@@ -64,7 +64,8 @@ static int cam_inited;
 
 
 
-#if defined(CONFIG_VIDEO_BF3703)
+//#if defined(CONFIG_VIDEO_BF3703)
+#if 0
 #include <media/bf3703.h>
 #define BF3703_BIGGEST_FRAME_BYTE_SIZE	PAGE_ALIGN(1600 * 1200 * 2)
 
@@ -197,7 +198,8 @@ struct bf3703_platform_data kunlun_bf3703_platform_data = {
 
 #endif
 
-#if defined(CONFIG_VIDEO_HI253)
+// #if defined(CONFIG_VIDEO_HI253)
+#if 0
 #include <media/hi253.h>
 #define BIGGEST_FRAME_BYTE_SIZE	PAGE_ALIGN(1600 * 1200 * 2)
 

@@ -6,7 +6,7 @@
 obj-y := id.o io.o control.o mux.o devices.o serial.o gpmc.o timer-gp.o pm.o\
 	gpio.o dma.o dmtimer.o powerdomains.o
 
-omap-2-3-common				= irq.o sdrc.o
+omap-2-3-common				= irq.o sdrc.o usb_debug.o
 hwmod-common				= omap_hwmod.o \
 					  omap_hwmod_common_data.o
 prcm-common				= prcm.o

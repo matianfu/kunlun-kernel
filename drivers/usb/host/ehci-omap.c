@@ -90,8 +90,15 @@ static const struct hc_driver ehci_omap_hc_driver;
 
 static void omap_ehci_soft_phy_reset(struct ehci_hcd_omap *omap, u8 port)
 {
-	unsigned long timeout = jiffies + msecs_to_jiffies(1000);
+	unsigned long timeout;
 	unsigned reg = 0;
+	unsigned timed_out=0;
+	
+	printk("\nfunc: %s, file: %s, line: %d >>>>\n", __func__, __FILE__, __LINE__);
+	printk("port number: %d \n", port);
+	printk("time out in 0.1 seconds \n");
+
+	timeout = jiffies + msecs_to_jiffies(100);
 
 	reg = ULPI_FUNC_CTRL_RESET
 		/* FUNCTION_CTRL_SET register */
@@ -104,6 +111,7 @@ static void omap_ehci_soft_phy_reset(struct ehci_hcd_omap *omap, u8 port)
 		| (1 << EHCI_INSNREG05_ULPI_CONTROL_SHIFT);
 
 	ehci_omap_writel(omap->res.regs, EHCI_INSNREG05_ULPI, reg);
+	printk("is omap->res.regs @ 0x%08x the correct address??? \n", (unsigned int)(omap->res.regs));
 
 	/* Wait for ULPI access completion */
 	while ((ehci_omap_readl(omap->res.regs, EHCI_INSNREG05_ULPI)
@@ -112,9 +120,12 @@ static void omap_ehci_soft_phy_reset(struct ehci_hcd_omap *omap, u8 port)
 
 		if (time_after(jiffies, timeout)) {
 			dev_dbg(omap->dev, "phy reset operation timed out\n");
+			timed_out = 1;
 			break;
 		}
 	}
+	printk("timed_out is %d \n", timed_out);
+	printk("func: %s, file: %s, line: %d <<<<\n", __func__, __FILE__, __LINE__);
 }
 
 /*-------------------------------------------------------------------------*/
@@ -138,6 +149,9 @@ static int ehci_hcd_omap_probe(struct platform_device *pdev)
 	struct usb_hcd *hcd;
 	int ret = -ENODEV;
 
+	printk(">>>> %s begin \n", __func__);
+	printk("%d platform device pdev @ 0x%08x, name: %s \n", __LINE__, (unsigned int)pdev, pdev->name);
+
 	if (!uhhtllp) {
 		dev_dbg(&pdev->dev, "missing platform_data\n");
 		goto err_end;
@@ -145,6 +159,7 @@ static int ehci_hcd_omap_probe(struct platform_device *pdev)
 
 	if (usb_disabled())
 		goto err_end;
+	printk("usb_disabled() == false \n");
 
 	omap = kzalloc(sizeof(*omap), GFP_KERNEL);
 	if (!omap) {
@@ -152,11 +167,19 @@ static int ehci_hcd_omap_probe(struct platform_device *pdev)
 		goto err_end;
 	}
 
+	printk("struct ehci_hcd_omap allocated \n");
+
 	pdata = &omap->platdata;
-	if (uhhtllp->get_platform_data(pdata) != 0) {
+	ret = uhhtllp->get_platform_data(pdata);
+	// if (uhhtllp->get_platform_data(pdata) != 0) {
+	if (ret != 0) {	
+
+		printk("something wrong: %d \n", __LINE__);
 		ret = -EINVAL;
 		goto err_mem;
 	}
+
+	printk("copy platform data from uhhtll to ehci_hcd_omap \n");
 
 	omapresp = &omap->res;
 	if (uhhtllp->get_resource(OMAP_EHCI, omapresp) != 0) {
@@ -164,10 +187,18 @@ static int ehci_hcd_omap_probe(struct platform_device *pdev)
 		goto err_mem;
 	}
 
+	printk("copy ehci resource from uhhtll to ehci_hcd_omap \n");
+
 	if (!omapresp->regs) {
 		dev_dbg(&pdev->dev, "failed to EHCI regs\n");
 		goto err_mem;
 	}
+
+	printk("printing ehci resource \n");
+	printk("ehci resource start : 0x%08x \n", (unsigned int)(omapresp->start));
+	printk("ehci resource size: 0x%08x \n", (unsigned int)(omapresp->len));
+	printk("echi resource regs: 0x%08x \n", (unsigned int)(omapresp->regs)); 
+	
 
 	hcd = usb_create_hcd(&ehci_omap_hc_driver, &pdev->dev,
 			dev_name(&pdev->dev));
@@ -177,6 +208,8 @@ static int ehci_hcd_omap_probe(struct platform_device *pdev)
 		goto err_mem;
 	}
 
+	printk("hcd created successfully. \n");
+
 	platform_set_drvdata(pdev, omap);
 	omap->dev		= &pdev->dev;
 	omap->ehci		= hcd_to_ehci(hcd);
@@ -185,6 +218,11 @@ static int ehci_hcd_omap_probe(struct platform_device *pdev)
 	hcd->rsrc_start = omapresp->start;
 	hcd->rsrc_len = omapresp->len;
 	hcd->regs =  omapresp->regs;
+
+	printk("printing hcd \n");
+	printk("hcd->rsrc_start 0x%08x \n", (unsigned int)(hcd->rsrc_start));
+	printk("hcd->rsrc_len 0x%08x \n", (unsigned int)(hcd->rsrc_len));
+	printk("hcd->regs 0x%08x \n", (unsigned int)(hcd->regs));
 
 	/* we know this is the memory we want, no need to ioremap again */
 	omap->ehci->caps = hcd->regs;
@@ -239,6 +277,37 @@ static int ehci_hcd_omap_probe(struct platform_device *pdev)
 
 	/* root ports should always stay powered */
 	ehci_port_power(omap->ehci, 1);
+
+	// gpio_direction_output(11, 1);	/** dirty hard code **/
+
+	/** test ULPI access **/
+	printk("ULPI ACCESS TEST --------------------------------------------------------------- begin >>>>\n");
+
+	// for (ret = 0; ret < 1000; ret++) {
+	// 	omap_ehci_soft_phy_reset(omap, 1);
+	// }	
+	
+	printk("ULPI ACCESS TEST ----------------------------------------------------------------- end <<<<\n");
+	
+#if 0	
+	/** it is said the bla bla bla should be released here ??? **/
+        if (pdata->phy_reset) {
+                /* Refer ISSUE1:
+                 * Hold the PHY in RESET for enough time till
+                 * PHY is settled and ready
+                 */
+                udelay(10);
+
+                if (gpio_is_valid(pdata->reset_gpio_port[0]))
+                        gpio_set_value(pdata->reset_gpio_port[0], 1);
+
+                if (gpio_is_valid(pdata->reset_gpio_port[1]))
+                        gpio_set_value(pdata->reset_gpio_port[1], 1);
+        }
+
+#endif
+
+	printk("ehci hcd omap probe ---------------------------------------------- end \n");
 
 	return 0;
 

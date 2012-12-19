@@ -38,7 +38,7 @@ enum data_type {
 };
 
 struct usbhs_omap_platform_data {
-	enum usbhs_omap3_port_mode	port_mode[OMAP3_HS_USB_PORTS];
+	enum 	usbhs_omap3_port_mode	port_mode[OMAP3_HS_USB_PORTS];
 
 	/* have to be valid if phy_reset is true and portx is in phy mode */
 	int	reset_gpio_port[OMAP3_HS_USB_PORTS];
@@ -255,5 +255,12 @@ void omap_usb_init(struct omap_usb_config *pdata);
 #define CONF2_PHYPWRDN		(1 << 3)
 #define CONF2_OTGPWRDN		(1 << 2)
 #define CONF2_DATPOL		(1 << 1)
+
+/*
+ *	Tianfu Ma	
+ *	matianfu@actnova.com
+ */
+
+extern void uhhtll_dump(void);
 
 #endif	/* __ASM_ARCH_OMAP_USB_H */
