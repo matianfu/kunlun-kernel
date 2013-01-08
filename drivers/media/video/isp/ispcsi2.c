@@ -811,7 +811,8 @@ int isp_csi2_ctx_config_format(struct isp_csi2_device *isp_csi2, u8 ctxnum,
 
 	isp_csi2_ctx_validate(&ctxnum);
 
-	pix.pixelformat = pixformat;
+//	pix.pixelformat = pixformat;
+	pix.pixelformat = V4L2_PIX_FMT_YUYV;
 	switch (pix.pixelformat) {
 	case V4L2_PIX_FMT_RGB565:
 	case V4L2_PIX_FMT_RGB565X:
@@ -2191,6 +2192,7 @@ int isp_csi2_try_pipeline(struct isp_csi2_device *isp_csi2,
 		pipe->csia_out = CSI2_MEM;
 		break;
 	default:
+printk("888888888888888888888888__func:%s, line:%d\n", __func__, __LINE__);
 		dev_err(dev, "Context config pixel format unsupported\n");
 		return -EINVAL;
 	}

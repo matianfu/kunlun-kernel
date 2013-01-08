@@ -193,6 +193,7 @@ int clk_set_rate(struct clk *clk, unsigned long rate)
 	spin_lock_irqsave(&clockfw_lock, flags);
 	if (arch_clock->clk_set_rate)
 		ret = arch_clock->clk_set_rate(clk, rate);
+
 	if (ret == 0) {
 		if (clk->recalc)
 			clk->rate = clk->recalc(clk);

@@ -11,7 +11,9 @@
 #ifndef _BOARD_ZOOM2_WIFI_H
 #define _BOARD_ZOOM2_WIFI_H
 
-#define ZOOM2_WIFI_PMENA_GPIO	158
+//modified by myself
+//#define ZOOM2_WIFI_PMENA_GPIO	158
+#define ZOOM2_WIFI_PMENA_GPIO	157
 #define ZOOM2_WIFI_IRQ_GPIO	162
 
 void config_wlan_mux(void);

@@ -566,7 +566,11 @@ static int ssd253x_ts_probe(struct i2c_client *client,const struct i2c_device_id
 	// UGlee begin
 	vaux1_control(1);
 	vaux2_control(1);
-	// temp = gpio_request(158, "TOUCH_RESET");
+	temp = gpio_request(158, "TOUCH_RESET");
+	if (temp < 0) {
+		printk(KERN_ERR "gpio158 request failed\n");
+		return -EBUSY;
+	}
 	// printk("gpio_request 158 returns %d\n", temp);	//TODO  UGlee: GPIO_158 request returns -EBUSY !!!!
 	gpio_direction_output(158, 0);
 	udelay(20);

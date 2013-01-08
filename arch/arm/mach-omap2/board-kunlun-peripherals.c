@@ -75,6 +75,9 @@
 #define WL127X_BTEN_GPIO	109
 #define KPD_LED_EN_GPIO		154
 
+//extern struct ov5640_platform_data ov5640_pdata;
+extern struct ov5640_platform_data ov5640_platform_data;
+
 #if defined(CONFIG_VIDEO_HI253) && defined(CONFIG_VIDEO_OMAP3)
 #include <media/hi253.h>
 extern struct platform_data kunlun_hi253_platform_data;
@@ -84,6 +87,7 @@ extern struct platform_data kunlun_hi253_platform_data;
 #include <media/bf3703.h>
 extern struct bf3703_platform_data kunlun_bf3703_platform_data;
 #endif
+
 
 #ifdef CONFIG_WL127X_RFKILL
 #include <linux/wl127x-rfkill.h>
@@ -637,6 +641,7 @@ static struct i2c_board_info __initdata kunlun_i2c_boardinfo[] = {
 };
 
 static struct i2c_board_info __initdata kunlun_i2c_bus2_info[] = {
+#if 0		//fixed by myself
 #if defined(CONFIG_VIDEO_HI253) && defined(CONFIG_VIDEO_OMAP3)
 	{
 		I2C_BOARD_INFO("Hi253", Hi253_I2C_ADDR),
@@ -650,13 +655,20 @@ static struct i2c_board_info __initdata kunlun_i2c_bus2_info[] = {
 		.platform_data = &kunlun_bf3703_platform_data,
 	},
 #endif
+#endif
 	/** UGlee added, for touchscreen, no idea which address is OK  **/	
-
+#if 1
 	{
 		I2C_BOARD_INFO("ssd253x-ts", 0x48),
 		.platform_data = NULL,
 	},
-
+#endif
+	/*added by myself for camera*/
+	{
+//		I2C_BOARD_INFO("ov5640", 0x78),
+		I2C_BOARD_INFO("ov5640", 0x3c),
+		.platform_data = &ov5640_platform_data,
+	},
 };
 
 
@@ -705,6 +717,7 @@ static int __init omap_i2c_init(void)
 		/** 	UGlee, clear bit to enable I2C2 pull-up 	**/
 		////
 		prog_io &= ~(OMAP3630_PRG_I2C2_PULLUPRESX);
+//prog_io |= OMAP3630_PRG_I2C2_PULLUPRESX;
 		////
 		omap_ctrl_writel(prog_io, OMAP343X_CONTROL_PROG_IO1);
 

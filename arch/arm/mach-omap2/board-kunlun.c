@@ -417,7 +417,6 @@ static struct omap_board_mux board_mux[] __initdata = {
 	OMAP3_MUX(MCBSP4_DR,	OMAP_MUX_MODE4 | OMAP_PIN_INPUT),	/* TOUCH_IRQ, GPIO_153, TODO pull? */
 	OMAP3_MUX(MCBSP4_DX,	OMAP_MUX_MODE4 | OMAP_PIN_OUTPUT),	/* KPD_LED_EN, GPIO_154, TODO active high? low? */
 	OMAP3_MUX(MCBSP4_FSX,	OMAP_MUX_MODE7 | OMAP_PIN_INPUT),	/* unused */
-
 	
 	// I2C1, dedicated for twl5030
 	OMAP3_MUX(I2C1_SCL,	OMAP_MUX_MODE0 | OMAP_PIN_INPUT_PULLUP),

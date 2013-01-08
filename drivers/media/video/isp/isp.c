@@ -633,15 +633,20 @@ u32 isp_set_xclk(struct device *dev, u32 xclk, u8 xclksel)
 	u32 divisor;
 	u32 currentxclk;
 	struct isp_device *isp = dev_get_drvdata(dev);
+//modified by myself;
+	isp->mclk = 216000000;
 
+printk("********************func:%s line:%d isp->mclk=%ld xclk=%ld\n", __func__, __LINE__, isp->mclk, xclk);
 	if (xclk >= isp->mclk) {
 		divisor = ISPTCTRL_CTRL_DIV_BYPASS;
 		currentxclk = isp->mclk;
 	} else if (xclk >= 2) {
 		divisor = isp->mclk / xclk;
+printk("********************func:%s line:%d divisor = %d isp->mclk=%ld xclk=%ld\n", __func__, __LINE__, divisor, isp->mclk, xclk);
 		if (divisor >= ISPTCTRL_CTRL_DIV_BYPASS)
 			divisor = ISPTCTRL_CTRL_DIV_BYPASS - 1;
 		currentxclk = isp->mclk / divisor;
+printk("-^--^-------------------func:%s current xclk = %d divisor = %d\n", __func__, currentxclk, divisor);
 	} else {
 		divisor = xclk;
 		currentxclk = 0;
@@ -649,6 +654,7 @@ u32 isp_set_xclk(struct device *dev, u32 xclk, u8 xclksel)
 
 	switch (xclksel) {
 	case 0:
+printk("--------------func:%s should go here\n", __func__);
 		isp_reg_and_or(dev, OMAP3_ISP_IOMEM_MAIN, ISP_TCTRL_CTRL,
 			       ~ISPTCTRL_CTRL_DIVA_MASK,
 			       divisor << ISPTCTRL_CTRL_DIVA_SHIFT);
@@ -690,6 +696,7 @@ u32 isp_set_cntclk(struct device *dev, u32 cntclk)
 	u32 currentcntclk;
 	struct isp_device *isp = dev_get_drvdata(dev);
 
+//printk("--------------------func:%s isp->mclk:%ld\n", __func__, isp->mclk);
 	if (cntclk >= isp->mclk) {
 		divisor = 1;
 		currentcntclk = isp->mclk;
@@ -709,6 +716,7 @@ u32 isp_set_cntclk(struct device *dev, u32 cntclk)
       printk(KERN_INFO "isp_set_cntclk(): CNTCLK set to %d Hz\n",
 				currentcntclk);
 
+printk("--------------------func:%s currentcntclk:%ld\n", __func__, currentcntclk);
 	return currentcntclk;
 }
 EXPORT_SYMBOL(isp_set_cntclk);
@@ -2806,7 +2814,7 @@ int isp_enable_mclk(struct device *dev)
 	ratio = curr_mclk / curr_dpll4_m5;
 
 	r = clk_set_rate(isp->dpll4_m5_ck, isp->mclk / ratio);
-		if (r) {
+	if (r) {
 			dev_err(dev, "clk_set_rate for dpll4_m5_ck failed\n");
 			return r;
 	}
@@ -3148,30 +3156,35 @@ static int isp_probe(struct platform_device *pdev)
 	isp->mclk = CM_CAM_MCLK_HZ / 2;
 
 	isp->cam_ick = clk_get(&camera_dev, "cam_ick");
+printk("*********func:%s line:%d isp->cam_iclk:0x%p\n", __func__, __LINE__, isp->cam_ick);
 	if (IS_ERR(isp->cam_ick)) {
 		dev_err(isp->dev, "clk_get cam_ick failed\n");
 		ret_err = PTR_ERR(isp->cam_ick);
 		goto out_free_mmio;
 	}
 	isp->cam_mclk = clk_get(&camera_dev, "cam_mclk");
+printk("*********func:%s line:%d isp->cam_mclk:0x%p\n", __func__, __LINE__, isp->cam_mclk);
 	if (IS_ERR(isp->cam_mclk)) {
 		dev_err(isp->dev, "clk_get cam_mclk failed\n");
 		ret_err = PTR_ERR(isp->cam_mclk);
 		goto out_clk_get_mclk;
 	}
 	isp->dpll4_m5_ck = clk_get(&camera_dev, "dpll4_m5_ck");
+printk("*********func:%s line:%d isp->dpll4_m5_ck:0x%p\n", __func__, __LINE__, isp->dpll4_m5_ck);
 	if (IS_ERR(isp->dpll4_m5_ck)) {
 		dev_err(isp->dev, "clk_get dpll4_m5_ck failed\n");
 		ret_err = PTR_ERR(isp->dpll4_m5_ck);
 		goto out_clk_get_dpll4_m5_ck;
 	}
 	isp->csi2_fck = clk_get(&camera_dev, "csi2_96m_fck");
+printk("*********func:%s line:%d isp->csi2_fck:0x%p\n", __func__, __LINE__, isp->csi2_fck);
 	if (IS_ERR(isp->csi2_fck)) {
 		dev_err(isp->dev, "clk_get csi2_96m_fck failed\n");
 		ret_err = PTR_ERR(isp->csi2_fck);
 		goto out_clk_get_csi2_fclk;
 	}
 	isp->l3_ick = clk_get(&camera_dev, "l3_ick");
+printk("*********func:%s line:%d isp->l3_ick:0x%p\n", __func__, __LINE__, isp->l3_ick);
 	if (IS_ERR(isp->l3_ick)) {
 		dev_err(isp->dev, "clk_get l3_ick failed\n");
 		ret_err = PTR_ERR(isp->l3_ick);

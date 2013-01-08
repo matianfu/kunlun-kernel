@@ -26,12 +26,6 @@
 #include <mach/gpio.h>
 #include <plat/omap-pm.h>
 
-#include <linux/videodev2.h>
-
-#if defined(CONFIG_VIDEO_HI253)
-#include <media/hi253.h>
-#endif
-
 static int cam_inited;
 #include <media/v4l2-int-device.h>
 #include <../drivers/media/video/omap34xxcam.h>
@@ -44,345 +38,344 @@ static int cam_inited;
 
 #define VAUX_2_8_V		0x09
 #define VAUX_1_8_V		0x05
-#define VAUX2_1_5_V     0x04
-#define VAUX4_2_8_V     0x09
-
 #define VAUX_DEV_GRP_P1		0x20
 #define VAUX_DEV_GRP_NONE	0x00
-#define VMMC2_1_8_V		0x06
-#define VMMC2_1_5_V 		0x04
 
-#define VMMC2_DEV_GRP_P1		0x20
-#define VMMC2_DEV_GRP_NONE	0x00
-#define CAMZOOM2_USE_XCLKB  	1
+#define CAMKUNLUN_USE_XCLKA  	0
+
+#define ISP_OV5640_MCLK		216000000
 
 /* Sensor specific GPIO signals */
-#define HI253_RESET_GPIO  	98
-#define HI253_STANDBY_GPIO	110
-#define BF3703_STANDBY_GPIO	180
-#define BF3703_RESET_GPIO	179
+#define OV5640_RESET_GPIO  	98
+#define OV5640_STANDBY_GPIO	126
 
-
-
-#if defined(CONFIG_VIDEO_BF3703)
-#include <media/bf3703.h>
-#define BF3703_BIGGEST_FRAME_BYTE_SIZE	PAGE_ALIGN(1600 * 1200 * 2)
-
-#define CAMKUNLUN_USE_XCLKB  	1
-
-#define ISP_MCLK		216000000
-
-//static int bf3703_powered = 0;
-static struct omap34xxcam_sensor_config bf3703_hwc = {
-    .sensor_isp  = 1,
-    .capture_mem = BF3703_BIGGEST_FRAME_BYTE_SIZE * 2,
-    .ival_default    = { 1, 30 },
-};
-
-static int bf3703_set_prv_data(struct v4l2_int_device *s,void *priv)
-{
-    struct omap34xxcam_hw_config *hwc = priv;
-
-    hwc->u.sensor.sensor_isp = bf3703_hwc.sensor_isp;
-    hwc->dev_index		= 1;
-    hwc->dev_minor		= 4;
-    hwc->dev_type		= OMAP34XXCAM_SLAVE_SENSOR;
-
-    return 0;
-}
-
-
-static struct isp_interface_config bf3703_if_config = {
-    .ccdc_par_ser 		= ISP_PARLL,
-    .dataline_shift 	= 0x0,
-    .hsvs_syncdetect 	= ISPCTRL_SYNC_DETECT_VSRISE,
-    .strobe 		= 0x0,
-    .prestrobe 		= 0x0,
-    .shutter 		= 0x0,
-    .wenlog 		= ISPCCDC_CFG_WENLOG_AND,
-    .wait_hs_vs		= 2,
-    .cam_mclk		= ISP_MCLK,
-    .u.par.par_bridge = 2,
-    .u.par.par_clk_pol = 0,
-};
-
-
-static int bf3703_power_set(struct v4l2_int_device *s, enum v4l2_power power)
-{
-    struct omap34xxcam_videodev *vdev = s->u.slave->master->priv;
-    struct isp_device *isp = dev_get_drvdata(vdev->cam->isp);
-    static enum v4l2_power previous_power = V4L2_POWER_OFF;
-    static struct pm_qos_request_list *qos_request;
-    int err = 0;
-
-    printk(KERN_INFO "previous_power = %d,bf3073_sensor_power_set(%d)\n",previous_power,power);
-
-    switch (power) {
-        case V4L2_POWER_ON:
-            /*
-             * Through-put requirement:
-             * Set max OCP freq for 3630 is 200 MHz through-put
-             * is in KByte/s so 200000 KHz * 4 = 800000 KByte/s
-             */
-            omap_pm_set_min_bus_tput(vdev->cam->isp,
-                    OCP_INITIATOR_AGENT, 800000);
-
-
-            /* Hold a constraint to keep MPU in C1 */
-            omap_pm_set_max_mpu_wakeup_lat(&qos_request, 12);
-
-            isp_configure_interface(vdev->cam->isp,&bf3703_if_config);
-
-            gpio_direction_output(HI253_STANDBY_GPIO, 1);
-            gpio_direction_output(BF3703_STANDBY_GPIO, 0);
-
-            twl_i2c_write_u8(TWL4030_MODULE_PM_RECEIVER,
-                    VAUX_2_8_V, TWL4030_VAUX4_DEDICATED);
-            twl_i2c_write_u8(TWL4030_MODULE_PM_RECEIVER,
-                    VAUX_DEV_GRP_P1, TWL4030_VAUX4_DEV_GRP);
-            udelay(100);
-            printk(KERN_ERR "VAUX4 = 2.8V\n");
-
-            gpio_direction_output(BF3703_RESET_GPIO, 1);
-            udelay(10);
-            /* have to put sensor to reset to guarantee detection */
-            gpio_direction_output(BF3703_RESET_GPIO, 0);
-            mdelay(100);
-            /* nRESET is active LOW. set HIGH to release reset */
-            gpio_direction_output(BF3703_RESET_GPIO, 1);
-            printk(KERN_INFO "reset camera(BF3703)\n");
-            break;
-        case V4L2_POWER_OFF:
-            printk(KERN_INFO "bf3703_sensor_power_set(OFF)\n");
-        case V4L2_POWER_STANDBY:
-            printk(KERN_INFO "bf3703_sensor_power_set(STANDBY)\n");
-
-            gpio_direction_output(BF3703_STANDBY_GPIO, 1);
-            printk(KERN_DEBUG "bf3703_sensor_power_set(STANDBY)\n");
-
-            /* Remove pm constraints */
-            omap_pm_set_min_bus_tput(vdev->cam->isp, OCP_INITIATOR_AGENT, 0);
-            omap_pm_set_max_mpu_wakeup_lat(&qos_request, -1);
-
-            /*twl_i2c_write_u8(TWL4030_MODULE_PM_RECEIVER,
-              VAUX_DEV_GRP_NONE, TWL4030_VAUX4_DEV_GRP);*/
-
-            /* Make sure not to disable the MCLK twice in a row */
-            if (previous_power == V4L2_POWER_ON){
-                isp_disable_mclk(isp);
-            }
-            break;
-    }
-
-    /* Save powerstate to know what was before calling POWER_ON. */
-    previous_power = power;
-    return err;
-}
-
-static u32 bf3703_set_xclk(struct v4l2_int_device *s, u32 xclkfreq)
-{
-    struct omap34xxcam_videodev *vdev = s->u.slave->master->priv;
-    printk(KERN_INFO "sensor_set_xclkb(%d)\n",xclkfreq);
-
-    return isp_set_xclk(vdev->cam->isp, xclkfreq, CAMKUNLUN_USE_XCLKB);
-}
-
-
-
-struct bf3703_platform_data kunlun_bf3703_platform_data = {
-    .power_set            = bf3703_power_set,
-    .priv_data_set        = bf3703_set_prv_data,
-    .set_xclk             = bf3703_set_xclk,
-};
-
+#if defined(CONFIG_VIDEO_OV5640) || defined(CONFIG_VIDEO_OV5640_MODULE)
+#include <media/ov5640.h>
+#include <../drivers/media/video/isp/ispcsi2.h>
+#define OV5640_CSI2_CLOCK_POLARITY	0	/* +/- pin order */
+#define OV5640_CSI2_DATA0_POLARITY	0	/* +/- pin order */
+#define OV5640_CSI2_DATA1_POLARITY	0	/* +/- pin order */
+#define OV5640_CSI2_CLOCK_LANE		1	 /* Clock lane position: 1 */
+#define OV5640_CSI2_DATA0_LANE		2	 /* Data0 lane position: 2 */
+#define OV5640_CSI2_DATA1_LANE		3	 /* Data1 lane position: 3 */
+#define OV5640_CSI2_PHY_THS_TERM	2
+#define OV5640_CSI2_PHY_THS_SETTLE	23
+#define OV5640_CSI2_PHY_TCLK_TERM	0
+#define OV5640_CSI2_PHY_TCLK_MISS	1
+#define OV5640_CSI2_PHY_TCLK_SETTLE	14
+#define OV5640_BIGGEST_FRAME_BYTE_SIZE	PAGE_ALIGN(ALIGN(3280, 0x20) * 2464 * 2)
 #endif
 
-#if defined(CONFIG_VIDEO_HI253)
-#include <media/hi253.h>
-#define BIGGEST_FRAME_BYTE_SIZE	PAGE_ALIGN(1600 * 1200 * 2)
-
-//static int hi253_powered = 0;
-
-#define ISP_MCLK		216000000
-
-static struct omap34xxcam_sensor_config hi253_hwc = {
-    .sensor_isp  = 1,
-    .capture_mem = BIGGEST_FRAME_BYTE_SIZE * 2,
-    .ival_default    = { 1, 30 },
-};
-
-static int hi253_set_prv_data(struct v4l2_int_device *s,void *priv,u8 type)
-{
-    struct omap34xxcam_hw_config *hwc = priv;
-
-    hwc->u.sensor.sensor_isp = hi253_hwc.sensor_isp;
-    hwc->dev_index		= 2;
-    hwc->dev_minor		= 5;
-    hwc->dev_type		= OMAP34XXCAM_SLAVE_SENSOR;
-
-    return 0;
-}
-
-
-static struct isp_interface_config Hi253_if_config = {
-    .ccdc_par_ser 		= ISP_PARLL,
-    .dataline_shift 	= 0x0,
-    .hsvs_syncdetect 	= ISPCTRL_SYNC_DETECT_VSRISE,
-    .strobe 		= 0x0,
-    .prestrobe 		= 0x0,
-    .shutter 		= 0x0,
-    .wenlog 		= ISPCCDC_CFG_WENLOG_AND,
-    .wait_hs_vs		= 2,
-    .cam_mclk		= ISP_MCLK,
-    .u.par.par_bridge = 2,
-    .u.par.par_clk_pol = 0,
-};
-
-
-static int hi253_power_set(struct v4l2_int_device *s, enum v4l2_power power,u8 type)
-{
-
-    struct omap34xxcam_videodev *vdev = s->u.slave->master->priv;
-    struct isp_device *isp = dev_get_drvdata(vdev->cam->isp);
-
-    static enum v4l2_power previous_power = V4L2_POWER_OFF;
-    static struct pm_qos_request_list *qos_request;
-    int err = 0;
-
-    printk(KERN_ERR "previous_power = %d,Hi253_sensor_power_set(%d)\n",previous_power,power);
-
-    switch (power) {
-        case V4L2_POWER_ON:
-            /*
-             * Through-put requirement:
-             * Set max OCP freq for 3630 is 200 MHz through-put
-             * is in KByte/s so 200000 KHz * 4 = 800000 KByte/s
-             */
-            omap_pm_set_min_bus_tput(vdev->cam->isp,
-                    OCP_INITIATOR_AGENT, 800000);
-
-            /* Hold a constraint to keep MPU in C1 */
-            omap_pm_set_max_mpu_wakeup_lat(&qos_request, 12);
-
-            isp_configure_interface(vdev->cam->isp,&Hi253_if_config);
-
-            gpio_direction_output(BF3703_STANDBY_GPIO,1);
-
-            gpio_direction_output(HI253_STANDBY_GPIO, 0);
-            udelay(10);
-
-            twl_i2c_write_u8(TWL4030_MODULE_PM_RECEIVER,
-                    VAUX_2_8_V, TWL4030_VAUX4_DEDICATED);
-            twl_i2c_write_u8(TWL4030_MODULE_PM_RECEIVER,
-                    VAUX_DEV_GRP_P1, TWL4030_VAUX4_DEV_GRP);
-            udelay(100);
-            printk(KERN_ERR "VAUX4 = 2.8V\n");
-
-            twl_i2c_write_u8(TWL4030_MODULE_PM_RECEIVER,
-                    VMMC2_1_5_V, TWL4030_VMMC2_DEDICATED);
-            twl_i2c_write_u8(TWL4030_MODULE_PM_RECEIVER,
-                    VMMC2_DEV_GRP_P1, TWL4030_VMMC2_DEV_GRP);
-            udelay(100);
-
-            printk(KERN_ERR "VMMC2 = 1.5V\n");
-
-
-            gpio_direction_output(HI253_RESET_GPIO, 1);
-            mdelay(1);
-            /* have to put sensor to reset to guarantee detection */
-            gpio_direction_output(HI253_RESET_GPIO, 0);
-            udelay(1500);
-            /* nRESET is active LOW. set HIGH to release reset */
-            gpio_direction_output(HI253_RESET_GPIO, 1);
-
-            printk(KERN_ERR "reset camera(HI253)\n");
-            break;
-
-        case V4L2_POWER_OFF:
-        case V4L2_POWER_STANDBY:
-            printk(KERN_ERR "_sensor_power_set(OFF )\n");
-
-            gpio_direction_output(HI253_STANDBY_GPIO, 1);
-            printk(KERN_DEBUG "hi253_sensor_power_set(STANDBY)\n");
-
-            /* Remove pm constraints */
-            omap_pm_set_min_bus_tput(vdev->cam->isp, OCP_INITIATOR_AGENT, 0);
-            omap_pm_set_max_mpu_wakeup_lat(&qos_request, -1);
-
-            /*
-               twl_i2c_write_u8(TWL4030_MODULE_PM_RECEIVER,
-               VAUX_DEV_GRP_NONE, TWL4030_VAUX4_DEV_GRP);
-               twl_i2c_write_u8(TWL4030_MODULE_PM_RECEIVER,
-               VAUX_DEV_GRP_NONE, TWL4030_VMMC2_DEV_GRP);
-               */
-
-
-            /* Make sure not to disable the MCLK twice in a row */
-            if (previous_power == V4L2_POWER_ON){
-                isp_disable_mclk(isp);
-            }
-            break;
-
-            //    printk(KERN_ERR "_sensor_power_set(STANDBY)\n");
-            break;
-    }
-
-    /* Save powerstate to know what was before calling POWER_ON. */
-    previous_power = power;
-    return err;
-}
-
-static u32 hi253_set_xclk(struct v4l2_int_device *s, u32 xclkfreq,u32 cntclk)
-{
-    struct omap34xxcam_videodev *vdev = s->u.slave->master->priv;
-    isp_set_cntclk(vdev->cam->isp, cntclk);
-    isp_set_xclk(vdev->cam->isp, xclkfreq, __USE_XCLKA_);
-    return 0;
-
-}
-
-
-
-struct platform_data kunlun_hi253_platform_data = {
-    .power_set            = hi253_power_set,
-    .priv_data_set        = hi253_set_prv_data,
-    .set_xclk             = hi253_set_xclk,
-
-};
-
+#ifdef CONFIG_VIDEO_LV8093
+#include <media/lv8093.h>
+#define LV8093_PS_GPIO			7
+/* GPIO7 is connected to lens PS pin through inverter */
+#define LV8093_PWR_OFF			1
+#define LV8093_PWR_ON			(!LV8093_PWR_OFF)
 #endif
 
-#if 0
 
-/** UGlee commented out **/
+#ifdef CONFIG_VIDEO_LV8093
+static int lv8093_lens_power_set(enum v4l2_power power)
+{
+	static enum v4l2_power previous_pwr = V4L2_POWER_OFF;
+
+	switch (power) {
+	case V4L2_POWER_ON:
+		printk(KERN_DEBUG "lv8093_lens_power_set(ON)\n");
+		if (previous_pwr == V4L2_POWER_OFF) {
+			if (gpio_request(LV8093_PS_GPIO, "lv8093_ps") != 0) {
+				printk(KERN_WARNING "Could not request GPIO %d"
+					" for LV8093\n", LV8093_PS_GPIO);
+				return -EIO;
+			}
+
+			gpio_set_value(LV8093_PS_GPIO, LV8093_PWR_OFF);
+			gpio_direction_output(LV8093_PS_GPIO, true);
+		}
+		gpio_set_value(LV8093_PS_GPIO, LV8093_PWR_ON);
+		break;
+	case V4L2_POWER_OFF:
+		printk(KERN_DEBUG "lv8093_lens_power_set(OFF)\n");
+		gpio_free(LV8093_PS_GPIO);
+		break;
+	case V4L2_POWER_STANDBY:
+		printk(KERN_DEBUG "lv8093_lens_power_set(STANDBY)\n");
+		gpio_set_value(LV8093_PS_GPIO, LV8093_PWR_OFF);
+		break;
+	}
+	previous_pwr = power;
+	return 0;
+}
+
+static int lv8093_lens_set_prv_data(void *priv)
+{
+	struct omap34xxcam_hw_config *hwc = priv;
+
+	hwc->dev_index = 2;
+	hwc->dev_minor = 5;
+	hwc->dev_type = OMAP34XXCAM_SLAVE_LENS;
+	return 0;
+}
+
+struct lv8093_platform_data kunlun_lv8093_platform_data = {
+	.power_set      = lv8093_lens_power_set,
+	.priv_data_set  = lv8093_lens_set_prv_data,
+};
+#endif
+
+#if defined(CONFIG_VIDEO_OV5640) || defined(CONFIG_VIDEO_OV5640_MODULE)
+
+static struct omap34xxcam_sensor_config ov5640_hwc = {
+	.sensor_isp  = 0,
+	.capture_mem = OV5640_BIGGEST_FRAME_BYTE_SIZE * 4,
+	.ival_default	= { 1, 10 },
+	.isp_if = ISP_CSIA,
+};
+
+static int ov5640_sensor_set_prv_data(struct v4l2_int_device *s, void *priv)
+{
+	struct omap34xxcam_hw_config *hwc = priv;
+
+	hwc->u.sensor		= ov5640_hwc;
+	hwc->dev_index		= 2;
+	hwc->dev_minor		= 5;
+	hwc->dev_type		= OMAP34XXCAM_SLAVE_SENSOR;
+
+	return 0;
+}
+
+static struct isp_interface_config ov5640_if_config = {
+	.ccdc_par_ser 		= ISP_CSIA,
+	.dataline_shift 	= 0x0,
+	.hsvs_syncdetect 	= ISPCTRL_SYNC_DETECT_VSRISE,
+	.strobe 		= 0x0,
+	.prestrobe 		= 0x0,
+	.shutter 		= 0x0,
+	.wenlog 		= ISPCCDC_CFG_WENLOG_AND,
+	.wait_hs_vs		= 0,
+	.cam_mclk		= ISP_OV5640_MCLK,
+	.raw_fmt_in		= ISPCCDC_INPUT_FMT_RG_GB,
+	.u.csi.crc 		= 0x0,
+	.u.csi.mode 		= 0x0,
+	.u.csi.edge 		= 0x0,
+	.u.csi.signalling 	= 0x0,
+	.u.csi.strobe_clock_inv = 0x0,
+	.u.csi.vs_edge 		= 0x0,
+	.u.csi.channel 		= 0x0,
+	.u.csi.vpclk 		= 0x2,
+	.u.csi.data_start 	= 0x0,
+	.u.csi.data_size 	= 0x0,
+	.u.csi.format 		= V4L2_PIX_FMT_SGRBG10,
+};
+
+
+static int ov5640_sensor_power_set(struct v4l2_int_device *s, enum v4l2_power power)
+{
+	struct omap34xxcam_videodev *vdev = s->u.slave->master->priv;
+	struct isp_device *isp = dev_get_drvdata(vdev->cam->isp);
+	struct isp_csi2_lanes_cfg lanecfg;
+	struct isp_csi2_phy_cfg phyconfig;
+	static enum v4l2_power previous_power = V4L2_POWER_OFF;
+	static struct pm_qos_request_list *qos_request;
+	int err = 0;
+
+	switch (power) {
+	case V4L2_POWER_ON:
+		/* Power Up Sequence */
+		printk(KERN_DEBUG "ov5640_sensor_power_set(ON)\n");
+
+		/*
+		 * Through-put requirement:
+		 * Set max OCP freq for 3630 is 200 MHz through-put
+		 * is in KByte/s so 200000 KHz * 4 = 800000 KByte/s
+		 */
+		omap_pm_set_min_bus_tput(vdev->cam->isp,
+					 OCP_INITIATOR_AGENT, 800000);
+
+		/* Hold a constraint to keep MPU in C1 */
+		omap_pm_set_max_mpu_wakeup_lat(&qos_request, 12);
+
+		isp_csi2_reset(&isp->isp_csi2);
+
+		lanecfg.clk.pol = OV5640_CSI2_CLOCK_POLARITY;
+		lanecfg.clk.pos = OV5640_CSI2_CLOCK_LANE;
+		lanecfg.data[0].pol = OV5640_CSI2_DATA0_POLARITY;
+		lanecfg.data[0].pos = OV5640_CSI2_DATA0_LANE;
+		lanecfg.data[1].pol = OV5640_CSI2_DATA1_POLARITY;
+		lanecfg.data[1].pos = OV5640_CSI2_DATA1_LANE;
+		lanecfg.data[2].pol = 0;
+		lanecfg.data[2].pos = 0;
+		lanecfg.data[3].pol = 0;
+		lanecfg.data[3].pos = 0;
+		isp_csi2_complexio_lanes_config(&isp->isp_csi2, &lanecfg);
+		isp_csi2_complexio_lanes_update(&isp->isp_csi2, true);
+
+		isp_csi2_ctrl_config_ecc_enable(&isp->isp_csi2, true);
+
+		phyconfig.ths_term = OV5640_CSI2_PHY_THS_TERM;
+		phyconfig.ths_settle = OV5640_CSI2_PHY_THS_SETTLE;
+		phyconfig.tclk_term = OV5640_CSI2_PHY_TCLK_TERM;
+		phyconfig.tclk_miss = OV5640_CSI2_PHY_TCLK_MISS;
+		phyconfig.tclk_settle = OV5640_CSI2_PHY_TCLK_SETTLE;
+		isp_csi2_phy_config(&isp->isp_csi2, &phyconfig);
+		isp_csi2_phy_update(&isp->isp_csi2, true);
+
+		isp_configure_interface(vdev->cam->isp, &ov5640_if_config);
+
+		/* Request and configure gpio pins */
+		if (gpio_request(OV5640_RESET_GPIO, "ov5640_rst") != 0)
+			return -EIO;
+
+		/* nRESET is active LOW. set HIGH to release reset */
+		gpio_set_value(OV5640_RESET_GPIO, 1);
+
+		/* set to output mode */
+		gpio_direction_output(OV5640_RESET_GPIO, true);
+
+		/* turn on analog power */
+		twl_i2c_write_u8(TWL4030_MODULE_PM_RECEIVER,
+				VAUX_2_8_V, TWL4030_VAUX2_DEDICATED);
+		twl_i2c_write_u8(TWL4030_MODULE_PM_RECEIVER,
+				VAUX_DEV_GRP_P1, TWL4030_VAUX2_DEV_GRP);
+
+		twl_i2c_write_u8(TWL4030_MODULE_PM_RECEIVER,
+				VAUX_2_8_V, TWL4030_VAUX4_DEDICATED);
+		twl_i2c_write_u8(TWL4030_MODULE_PM_RECEIVER,
+				VAUX_DEV_GRP_P1, TWL4030_VAUX4_DEV_GRP);
+		udelay(100);
+/************************************************************/
+if (gpio_request(OV5640_STANDBY_GPIO, "ov5640_standby") != 0)
+    return -EIO;
+gpio_direction_output(OV5640_STANDBY_GPIO, true);
+gpio_set_value(OV5640_STANDBY_GPIO, 1);
+udelay(2000);
+gpio_set_value(OV5640_STANDBY_GPIO, 0);
+udelay(2000);
+/************************************************************/
+
+		/* have to put sensor to reset to guarantee detection */
+		gpio_set_value(OV5640_RESET_GPIO, 0);
+		udelay(1500);
+
+		/* nRESET is active LOW. set HIGH to release reset */
+		gpio_set_value(OV5640_RESET_GPIO, 1);
+		udelay(300);
+		break;
+	case V4L2_POWER_OFF:
+	case V4L2_POWER_STANDBY:
+		printk(KERN_DEBUG "ov5640_sensor_power_set(%s)\n",
+			(power == V4L2_POWER_OFF) ? "OFF" : "STANDBY");
+		/* Power Down Sequence */
+		isp_csi2_complexio_power(&isp->isp_csi2, ISP_CSI2_POWER_OFF);
+
+		twl_i2c_write_u8(TWL4030_MODULE_PM_RECEIVER,
+				VAUX_DEV_GRP_NONE, TWL4030_VAUX4_DEV_GRP);
+		twl_i2c_write_u8(TWL4030_MODULE_PM_RECEIVER,
+				VAUX_DEV_GRP_NONE, TWL4030_VAUX2_DEV_GRP);
+		gpio_free(OV5640_RESET_GPIO);
+
+		/* Remove pm constraints */
+		omap_pm_set_min_bus_tput(vdev->cam->isp, OCP_INITIATOR_AGENT, 0);
+		omap_pm_set_max_mpu_wakeup_lat(&qos_request, -1);
+
+		/* Make sure not to disable the MCLK twice in a row */
+		if (previous_power == V4L2_POWER_ON)
+			isp_disable_mclk(isp);
+		break;
+	}
+
+	/* Save powerstate to know what was before calling POWER_ON. */
+	previous_power = power;
+	return err;
+}
+
+static u32 ov5640_sensor_set_xclk(struct v4l2_int_device *s, u32 xclkfreq)
+{
+	struct omap34xxcam_videodev *vdev = s->u.slave->master->priv;
+
+	return isp_set_xclk(vdev->cam->isp, xclkfreq, CAMKUNLUN_USE_XCLKA);
+}
+
+static int ov5640_csi2_lane_count(struct v4l2_int_device *s, int count)
+{
+	struct omap34xxcam_videodev *vdev = s->u.slave->master->priv;
+	struct isp_device *isp = dev_get_drvdata(vdev->cam->isp);
+
+	return isp_csi2_complexio_lanes_count(&isp->isp_csi2, count);
+}
+
+static int ov5640_csi2_cfg_vp_out_ctrl(struct v4l2_int_device *s,
+				       u8 vp_out_ctrl)
+{
+	struct omap34xxcam_videodev *vdev = s->u.slave->master->priv;
+	struct isp_device *isp = dev_get_drvdata(vdev->cam->isp);
+
+	return isp_csi2_ctrl_config_vp_out_ctrl(&isp->isp_csi2, vp_out_ctrl);
+}
+
+static int ov5640_csi2_ctrl_update(struct v4l2_int_device *s, bool force_update)
+{
+	struct omap34xxcam_videodev *vdev = s->u.slave->master->priv;
+	struct isp_device *isp = dev_get_drvdata(vdev->cam->isp);
+
+	return isp_csi2_ctrl_update(&isp->isp_csi2, force_update);
+}
+
+static int ov5640_csi2_cfg_virtual_id(struct v4l2_int_device *s, u8 ctx, u8 id)
+{
+	struct omap34xxcam_videodev *vdev = s->u.slave->master->priv;
+	struct isp_device *isp = dev_get_drvdata(vdev->cam->isp);
+
+	return isp_csi2_ctx_config_virtual_id(&isp->isp_csi2, ctx, id);
+}
+
+static int ov5640_csi2_ctx_update(struct v4l2_int_device *s, u8 ctx,
+				  bool force_update)
+{
+	struct omap34xxcam_videodev *vdev = s->u.slave->master->priv;
+	struct isp_device *isp = dev_get_drvdata(vdev->cam->isp);
+
+	return isp_csi2_ctx_update(&isp->isp_csi2, ctx, force_update);
+}
+
+static int ov5640_csi2_calc_phy_cfg0(struct v4l2_int_device *s,
+				     u32 mipiclk, u32 lbound_hs_settle,
+				     u32 ubound_hs_settle)
+{
+	struct omap34xxcam_videodev *vdev = s->u.slave->master->priv;
+	struct isp_device *isp = dev_get_drvdata(vdev->cam->isp);
+
+	return isp_csi2_calc_phy_cfg0(&isp->isp_csi2, mipiclk,
+				      lbound_hs_settle, ubound_hs_settle);
+}
+
+struct ov5640_platform_data ov5640_platform_data = {
+	.power_set            = ov5640_sensor_power_set,
+	.priv_data_set        = ov5640_sensor_set_prv_data,
+	.set_xclk             = ov5640_sensor_set_xclk,
+	.csi2_lane_count      = ov5640_csi2_lane_count,
+	.csi2_cfg_vp_out_ctrl = ov5640_csi2_cfg_vp_out_ctrl,
+	.csi2_ctrl_update     = ov5640_csi2_ctrl_update,
+	.csi2_cfg_virtual_id  = ov5640_csi2_cfg_virtual_id,
+	.csi2_ctx_update      = ov5640_csi2_ctx_update,
+	.csi2_calc_phy_cfg0   = ov5640_csi2_calc_phy_cfg0,
+};
+#endif
 
 void __init kunlun_cam_init(void)
 {
-    cam_inited = 0;
+	cam_inited = 0;
+	/* Request and configure gpio pins */
+	if (gpio_request(OV5640_STANDBY_GPIO, "ov3640_standby_gpio") != 0) {
+		printk(KERN_ERR "Could not request GPIO %d",
+					OV5640_STANDBY_GPIO);
+		return;
+	}
 
-#if defined(CONFIG_VIDEO_HI253)
-    /*OV2655_STANDBY_GPIO can't act as output pin on kunlun p0 */
-    /* Request and configure gpio pins */
-    if (gpio_request(HI253_STANDBY_GPIO, "hi253_standby_gpio") != 0) {
-        printk(KERN_ERR "Could not request GPIO %d",
-                HI253_STANDBY_GPIO);
-    }
-    /* set to output mode */
-    gpio_direction_output(HI253_STANDBY_GPIO, 1);
-#endif
+	/* set to output mode */
+	gpio_direction_output(OV5640_STANDBY_GPIO, true);
 
-#if defined(CONFIG_VIDEO_BF3703)
-    if (gpio_request(BF3703_STANDBY_GPIO, "bf3703_standby_gpio") != 0) {
-        printk(KERN_ERR "Could not request GPIO %d",
-                BF3703_STANDBY_GPIO);
-    }
-
-    gpio_direction_output(BF3703_STANDBY_GPIO, 1);
-#endif
-
-    cam_inited = 1;
+	cam_inited = 1;
 }
-
-#endif
-
 #endif
