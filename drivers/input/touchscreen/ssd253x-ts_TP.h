@@ -5,7 +5,8 @@
 #define SENSENO			27	// UGlee FUCK 12		
 #define OP_MODE			(0x02)	// UGlee
 
-#define ENABLE_INT		0	// 0->Polling, 1->Interupt, 2->Hybrid	/** UGlee default 2, hybrid **/
+//#define ENABLE_INT		0	// 0->Polling, 1->Interupt, 2->Hybrid	/** UGlee default 2, hybrid **/
+#define ENABLE_INT		1	// 0->Polling, 1->Interupt, 2->Hybrid	/** UGlee default 2, hybrid **/
 #define EdgeDisable		0	// if Edge Disable, set it to 1, else reset to 0
 #define RunningAverageMode	2	//{0,8},{5,3},{6,2},{7,1}
 #define RunningAverageDist	4	// Threshold Between two consecutive points
