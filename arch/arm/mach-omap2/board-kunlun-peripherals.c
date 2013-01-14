@@ -656,13 +656,14 @@ static struct i2c_board_info __initdata kunlun_i2c_bus2_info[] = {
 	},
 #endif
 #endif
+#if 1
 	/*added by myself for camera*/
 	{
 //		I2C_BOARD_INFO("ov5640", 0x78),
 		I2C_BOARD_INFO("ov5640", 0x3c),
 		.platform_data = &ov5640_platform_data,
 	},
-
+#endif
 	/** UGlee added, for touchscreen, no idea which address is OK  **/	
 	{
 		I2C_BOARD_INFO("ssd253x-ts", 0x48),

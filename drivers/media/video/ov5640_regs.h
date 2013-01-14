@@ -226,6 +226,7 @@ struct ov5640_mipi_settings {
  * struct struct frame_settings - struct for storage of sensor
  * frame settings
  */
+#if 0
 struct ov5640_frame_settings {
 	u16	frame_len_lines_min;
 	u16	frame_len_lines;
@@ -244,6 +245,28 @@ struct ov5640_frame_settings {
 	u16	h_mode_add;
 	u16	h_add_ave;
 };
+#endif
+struct ov5640_frame_settings {
+    u16 frame_len_lines_min;
+    u16 frame_len_lines;
+    u16 line_len_pck;
+    u16 x_addr_start;
+    u16 x_addr_end;
+    u16 y_addr_start;
+    u16 y_addr_end;
+    u16 x_output_size;
+    u16 y_output_size;
+    u16 x_total_size;
+    u16 y_total_size;
+    u16     isp_x_offset;
+    u16     isp_y_offset;
+    u16 x_even_inc;
+    u16 x_odd_inc;
+    u16 y_even_inc;
+    u16 y_odd_inc;
+};
+
+
 
 /**
  * struct struct ov5640_sensor_settings - struct for storage of

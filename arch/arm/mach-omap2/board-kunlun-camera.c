@@ -63,7 +63,7 @@ static int cam_inited;
 #define OV5640_CSI2_PHY_TCLK_TERM	0
 #define OV5640_CSI2_PHY_TCLK_MISS	1
 #define OV5640_CSI2_PHY_TCLK_SETTLE	14
-#define OV5640_BIGGEST_FRAME_BYTE_SIZE	PAGE_ALIGN(ALIGN(3280, 0x20) * 2464 * 2)
+#define OV5640_BIGGEST_FRAME_BYTE_SIZE	PAGE_ALIGN(ALIGN(2592, 0x20) * 1944 * 2)
 #endif
 
 #ifdef CONFIG_VIDEO_LV8093
@@ -166,10 +166,10 @@ static struct isp_interface_config ov5640_if_config = {
 	.u.csi.vpclk 		= 0x2,
 	.u.csi.data_start 	= 0x0,
 	.u.csi.data_size 	= 0x0,
-	.u.csi.format 		= V4L2_PIX_FMT_SGRBG10,
+	.u.csi.format 		= V4L2_PIX_FMT_YUYV,
 };
 
-
+#define OV5640_AF_GPIO	159
 static int ov5640_sensor_power_set(struct v4l2_int_device *s, enum v4l2_power power)
 {
 	struct omap34xxcam_videodev *vdev = s->u.slave->master->priv;
@@ -226,40 +226,43 @@ static int ov5640_sensor_power_set(struct v4l2_int_device *s, enum v4l2_power po
 		/* Request and configure gpio pins */
 		if (gpio_request(OV5640_RESET_GPIO, "ov5640_rst") != 0)
 			return -EIO;
-
 		/* nRESET is active LOW. set HIGH to release reset */
-		gpio_set_value(OV5640_RESET_GPIO, 1);
-
+//		gpio_set_value(OV5640_RESET_GPIO, 1);
 		/* set to output mode */
 		gpio_direction_output(OV5640_RESET_GPIO, true);
 
-		/* turn on analog power */
-		twl_i2c_write_u8(TWL4030_MODULE_PM_RECEIVER,
-				VAUX_2_8_V, TWL4030_VAUX2_DEDICATED);
-		twl_i2c_write_u8(TWL4030_MODULE_PM_RECEIVER,
-				VAUX_DEV_GRP_P1, TWL4030_VAUX2_DEV_GRP);
-
+        /* turn on analog power */
 		twl_i2c_write_u8(TWL4030_MODULE_PM_RECEIVER,
 				VAUX_2_8_V, TWL4030_VAUX4_DEDICATED);
 		twl_i2c_write_u8(TWL4030_MODULE_PM_RECEIVER,
 				VAUX_DEV_GRP_P1, TWL4030_VAUX4_DEV_GRP);
+
+#if 0
+		twl_i2c_write_u8(TWL4030_MODULE_PM_RECEIVER,
+				VAUX_2_8_V, TWL4030_VAUX4_DEDICATED);
+		twl_i2c_write_u8(TWL4030_MODULE_PM_RECEIVER,
+				VAUX_DEV_GRP_P1, TWL4030_VAUX4_DEV_GRP);
+#endif
+
 		udelay(100);
 /************************************************************/
 if (gpio_request(OV5640_STANDBY_GPIO, "ov5640_standby") != 0)
     return -EIO;
 gpio_direction_output(OV5640_STANDBY_GPIO, true);
-gpio_set_value(OV5640_STANDBY_GPIO, 1);
+//gpio_set_value(OV5640_STANDBY_GPIO, 1);
 udelay(2000);
-gpio_set_value(OV5640_STANDBY_GPIO, 0);
+//gpio_set_value(OV5640_STANDBY_GPIO, 0);
+gpio_direction_output(OV5640_STANDBY_GPIO, 0);
 udelay(2000);
 /************************************************************/
 
 		/* have to put sensor to reset to guarantee detection */
-		gpio_set_value(OV5640_RESET_GPIO, 0);
+//		gpio_set_value(OV5640_RESET_GPIO, 0);
+		gpio_direction_output(OV5640_RESET_GPIO, 0);
 		udelay(1500);
-
 		/* nRESET is active LOW. set HIGH to release reset */
-		gpio_set_value(OV5640_RESET_GPIO, 1);
+//		gpio_set_value(OV5640_RESET_GPIO, 1);
+		gpio_direction_output(OV5640_RESET_GPIO, 1);
 		udelay(300);
 		break;
 	case V4L2_POWER_OFF:

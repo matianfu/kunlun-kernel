@@ -309,7 +309,7 @@ u32 omap2_clksel_round_rate_div(struct clk *clk, unsigned long target_rate,
 			break; /* found it */
 	}
 
-printk("------func:%s line:%d clkr->div=%d target_rate=%ld\n", __func__, __LINE__,  clkr->div, target_rate);
+//printk("------func:%s line:%d clkr->div=%d target_rate=%ld\n", __func__, __LINE__,  clkr->div, target_rate);
 
 	if (!clkr->div) {
 		pr_err("clock: Could not find divisor for target "

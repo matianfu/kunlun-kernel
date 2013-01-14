@@ -805,6 +805,9 @@ static int ssd253x_ts_resume(struct i2c_client *client)
 	if(ssl_priv->use_irq) {
 		// enable_irq(ssl_priv->irq);
 		// printk("ssd253x-ts.c enable irq, ssd253x_ts_resume -------------------------------------------------------------------------------\n");
+		 enable_irq(ssl_priv->use_irq);
+		 printk("ssd253x-ts.c enable irq, ssd253x_ts_resume -------------------------------------------------------------------------------\n");
+
 	}
 	else hrtimer_start(&ssl_priv->timer, ktime_set(1, 0), HRTIMER_MODE_REL);
 	return 0;
@@ -824,6 +827,9 @@ static int ssd253x_ts_suspend(struct i2c_client *client, pm_message_t mesg)
 		// free_irq(ssl_priv->irq, ssl_priv);	/** originally free_irq ssl_priv, UGlee **/
 		// disable_irq_nosync(ssl_priv->irq);
 		// printk("ssd253x-ts.c disable irq, ssd253x_ts_suspend-------------------------------------------------------------------------------\n");
+		 free_irq(ssl_priv->use_irq, ssl_priv);	/** originally free_irq ssl_priv, UGlee **/
+		 disable_irq_nosync(ssl_priv->irq);
+		 printk("ssd253x-ts.c disable irq, ssd253x_ts_suspend-------------------------------------------------------------------------------\n");
 	}
 	return 0;
 }
