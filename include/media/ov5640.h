@@ -49,7 +49,7 @@ struct ov5640_platform_data {
     int (*power_set)(struct v4l2_int_device *s, enum v4l2_power power);
     int (*ifparm)(struct v4l2_ifparm *p);
     int (*priv_data_set)(struct v4l2_int_device *s, void *);
-    u32 (*set_xclk)(struct v4l2_int_device *s, u32 xclkfreq, u32 cntclk);
+    u32 (*set_xclk)(struct v4l2_int_device *s, u32 xclkfreq);
     int (*cfg_interface_bridge)(u32);
     int (*csi2_lane_count)(struct v4l2_int_device *s, int count);
     int (*csi2_cfg_vp_out_ctrl)(struct v4l2_int_device *s, u8 vp_out_ctrl);

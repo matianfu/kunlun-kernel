@@ -369,8 +369,10 @@ const static struct ov5640_reg initial_list[] = {
 {0x3c0b, 0x40, I2C_8BIT},
 {0x3820, 0x40, I2C_8BIT},
 {0x3821, 0x06, I2C_8BIT},
-{0x3814, 0x11, I2C_8BIT},
-{0x3815, 0x11, I2C_8BIT},
+/*{0x3814, 0x11, I2C_8BIT}, */
+{0x3814, 0x31, I2C_8BIT},
+/*{0x3815, 0x11, I2C_8BIT}, */
+{0x3815, 0x31, I2C_8BIT},
 {0x3800, 0x00, I2C_8BIT},
 {0x3801, 0x00, I2C_8BIT},
 {0x3802, 0x00, I2C_8BIT},
@@ -1055,7 +1057,7 @@ retry:
 		return 0;
 
 	if (retries <= 5) {
-		v4l_info(client, "Retrying I2C... %d", retries);
+		v4l_info(client, "Retrying I2C... %d\n", retries);
 		retries++;
 		mdelay(20);
 		goto retry;
@@ -1079,14 +1081,14 @@ static int ov5640_write_regs(struct i2c_client *client,
 	const struct ov5640_reg *list = reglist;
 	int i = 0;
 
-printk("---------------------------------------------begin writting regs\n");
+printk("-----------------------------------------begin writting regs\n");
 
 	while (!((list->reg == I2C_REG_TERM)
 		&& (list->val == I2C_VAL_TERM))) {
 		err = ov5640_write_reg(client, list->reg,
 				list->val, list->length);
 
-//		printk("-----------------------------reg number:%d reg:0x%x\n", ++i, list->reg);
+		printk("-----------------------------reg number:%d reg:0x%x\n", ++i, list->reg);
 		if (err)
 			return err;
 
@@ -1487,7 +1489,7 @@ static int ov5640_setup_mipi(struct v4l2_int_device *s, unsigned isize)
 	struct i2c_client *client = sensor->i2c_client;
 
 	/* NOTE: Make sure ov5640_update_clocks is called 1st */
-	printk("%s...........%d\n",__func__,__LINE__);
+	printk("%s...............................%d\n",__func__,__LINE__);
 
 //	ov5640_write_reg(client, OV5640_REG_TESTDI, 0x04, I2C_8BIT);
 
@@ -1500,7 +1502,6 @@ static int ov5640_setup_mipi(struct v4l2_int_device *s, unsigned isize)
 //	ov5640_write_reg(client, OV5640_REG_RGTHSZERO, \
 		ov5640_settings[isize].mipi.ths_zero, I2C_8BIT);
 
-printk("******************************func:%s line:%d\n", __func__, __LINE__);
 ov5640_write_reg(client,0x4800, 0x04, I2C_8BIT);
 ov5640_write_reg(client,0x4801, 0x04, I2C_8BIT);
 ov5640_write_reg(client,0x4805, 0x10, I2C_8BIT);
@@ -1547,6 +1548,7 @@ static int ov5640_configure_frame(struct i2c_client *client, unsigned isize)
 	u32 val;
 	printk("%s...........%d\n",__func__,__LINE__);
 	
+#if 0
 	ov5640_write_reg(client, 0x3800,
 	    (ov5640_settings[isize].frame.x_addr_start&0xFF00)>>8, I2C_8BIT);
 	ov5640_write_reg(client, 0x3801,
@@ -1591,7 +1593,29 @@ static int ov5640_configure_frame(struct i2c_client *client, unsigned isize)
 	    ((ov5640_settings[isize].frame.x_odd_inc&0xF)<<4 |(ov5640_settings[isize].frame.x_even_inc&0xF)),I2C_8BIT);
 	ov5640_write_reg(client, 0x3815,
 	    ((ov5640_settings[isize].frame.y_odd_inc&0xF)<<4 |(ov5640_settings[isize].frame.y_even_inc&0xF)),I2C_8BIT);
-	
+#endif 
+
+	ov5640_write_reg(client, 0x3820, 0x41, I2C_8BIT);
+	ov5640_write_reg(client, 0x3821, 0x07, I2C_8BIT);
+
+	ov5640_write_reg(client, 0x3803, 0xfa, I2C_8BIT);
+	ov5640_write_reg(client, 0x3806, 0x06, I2C_8BIT);
+	ov5640_write_reg(client, 0x3807, 0xa9, I2C_8BIT);
+	ov5640_write_reg(client, 0x3808, 0x05, I2C_8BIT);
+	ov5640_write_reg(client, 0x3809, 0x00, I2C_8BIT);
+	ov5640_write_reg(client, 0x380a, 0x02, I2C_8BIT);
+	ov5640_write_reg(client, 0x380b, 0xd0, I2C_8BIT);
+	ov5640_write_reg(client, 0x380c, 0x07, I2C_8BIT);
+	ov5640_write_reg(client, 0x380d, 0x64, I2C_8BIT);
+	ov5640_write_reg(client, 0x380e, 0x02, I2C_8BIT);
+	ov5640_write_reg(client, 0x380f, 0xe4, I2C_8BIT);
+	ov5640_write_reg(client, 0x3813, 0x04, I2C_8BIT);
+
+	ov5640_write_reg(client, 0x3618, 0x00, I2C_8BIT);
+	ov5640_write_reg(client, 0x3612, 0x29, I2C_8BIT);
+	ov5640_write_reg(client, 0x3709, 0x52, I2C_8BIT);
+	ov5640_write_reg(client, 0x370c, 0x03, I2C_8BIT);
+
 	return 0;
 
 }
@@ -1677,8 +1701,8 @@ static int ov5640_configure(struct v4l2_int_device *s)
 	struct ov5640_sensor *sensor = s->priv;
 	struct i2c_client *client = sensor->i2c_client;
 	unsigned isize = isize_current;
-	int err;
-//	struct vcontrol *lvc = NULL;
+	int err, i;
+	struct vcontrol *lvc = NULL;
 	printk("%s.................................................%d\n",__func__,__LINE__);
 
 	err = ov5640_write_reg(client, OV5640_REG_SW_RESET, 0x01, I2C_8BIT);
@@ -1686,22 +1710,21 @@ static int ov5640_configure(struct v4l2_int_device *s)
 
 	ov5640_write_regs(client, initial_list);
 
-	ov5640_setup_pll(client, isize);
+//	ov5640_setup_pll(client, isize);
 
 	ov5640_setup_mipi(s, isize);
 
 	/* configure image size and pixel format */
 	ov5640_configure_frame(client, isize);
 
-	ov5640_set_orientation(client, sensor->ver);
+//	ov5640_set_orientation(client, sensor->ver);
 
 	sensor->pdata->csi2_cfg_vp_out_ctrl(s, 2);
 	sensor->pdata->csi2_ctrl_update(s, false);
 
-	sensor->pdata->csi2_cfg_virtual_id(s, 0, OV5640_CSI2_VIRTUAL_ID);
+	sensor->pdata->csi2_cfg_virtual_id(s, 0, 0);
 	sensor->pdata->csi2_ctx_update(s, 0, false);
-	ov5640_set_virtual_id(client, OV5640_CSI2_VIRTUAL_ID);
-#if 0
+//	ov5640_set_virtual_id(client, OV5640_CSI2_VIRTUAL_ID);
 	/* Set initial exposure and gain */
 	i = find_vctrl(V4L2_CID_EXPOSURE);
 	if (i >= 0) {
@@ -1717,6 +1740,7 @@ static int ov5640_configure(struct v4l2_int_device *s)
 				sensor->v4l2_int_device, lvc);
 	}
 
+#if 0
 	i = find_vctrl(V4L2_CID_TEST_PATTERN);
 	if (i >= 0) {
 		lvc = &ov5640sensor_video_control[i];
@@ -1728,12 +1752,13 @@ static int ov5640_configure(struct v4l2_int_device *s)
 	err = ov5640_write_reg(client, 0x4202, 0x00, I2C_8BIT);
 	mdelay(1);
 
+#if 0 
 /***************added by myself*******/
 	unsigned int val = 0;
 	val = *((volatile unsigned int *)0x48072008);
 	printk("---xxxxxxxxxx------func:%s line:%d STAT val:0x%x", __func__, __LINE__, val);
 /*****************************************/
-
+#endif
 	return err;
 }
 
@@ -2194,7 +2219,7 @@ static int __ov5640_power_off_standby(struct v4l2_int_device *s,
 		return rval;
 	}
 
-	sensor->pdata->set_xclk(s, 0,0);
+	sensor->pdata->set_xclk(s, 0);
 	return 0;
 }
 
@@ -2222,10 +2247,10 @@ static int ov5640_power_on(struct v4l2_int_device *s)
 	if (rval < 0) {
 		v4l_err(client, "Unable to set the power state: "
 			OV5640_DRIVER_NAME " sensor\n");
-		sensor->pdata->set_xclk(s, 0,0);
+		sensor->pdata->set_xclk(s, 0);
 		return rval;
 	}
-	sensor->pdata->set_xclk(s, xclk_current,cntclk);
+	sensor->pdata->set_xclk(s, xclk_current);
 
 	return 0;
 }
@@ -2248,7 +2273,7 @@ static int ioctl_s_power(struct v4l2_int_device *s, enum v4l2_power on)
 	case V4L2_POWER_ON:
 		ov5640_power_on(s);
 		if (current_power_state == V4L2_POWER_STANDBY) {
-printk("---------------------------------------------------------xxxx here\n");
+printk("-----------------------------ioctl_s_power--------------xxxx here\n");
 			sensor->resuming = true;
 			ov5640_configure(s);
 		}
@@ -2360,7 +2385,7 @@ printk("----------------------check i2c write 0x%x val:0x%x\n", list->reg, xxx);
 #endif
 /**************************************************************/
 
-#if 0
+#if 1
 	err = ov5640_power_off(s);
 	if (err) {
 		printk("--------------power off err in func:%s line:%d\n", __func__, __LINE__);

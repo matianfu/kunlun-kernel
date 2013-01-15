@@ -275,8 +275,10 @@ udelay(2000);
 		twl_i2c_write_u8(TWL4030_MODULE_PM_RECEIVER,
 				VAUX_DEV_GRP_NONE, TWL4030_VAUX4_DEV_GRP);
 		twl_i2c_write_u8(TWL4030_MODULE_PM_RECEIVER,
-				VAUX_DEV_GRP_NONE, TWL4030_VAUX2_DEV_GRP);
+//				VAUX_DEV_GRP_NONE, TWL4030_VAUX2_DEV_GRP);
+				VAUX_DEV_GRP_NONE, TWL4030_VAUX4_DEV_GRP);
 		gpio_free(OV5640_RESET_GPIO);
+		gpio_free(OV5640_STANDBY_GPIO);
 
 		/* Remove pm constraints */
 		omap_pm_set_min_bus_tput(vdev->cam->isp, OCP_INITIATOR_AGENT, 0);
