@@ -55,11 +55,20 @@ static int cam_inited;
 #define OV5640_CSI2_CLOCK_POLARITY	0	/* +/- pin order */
 #define OV5640_CSI2_DATA0_POLARITY	0	/* +/- pin order */
 #define OV5640_CSI2_DATA1_POLARITY	0	/* +/- pin order */
+/*************************************************************/
+#if 0
 #define OV5640_CSI2_CLOCK_LANE		1	 /* Clock lane position: 1 */
 #define OV5640_CSI2_DATA0_LANE		2	 /* Data0 lane position: 2 */
 #define OV5640_CSI2_DATA1_LANE		3	 /* Data1 lane position: 3 */
+#else
+#define OV5640_CSI2_CLOCK_LANE		3	 /* Clock lane position: 1 */
+#define OV5640_CSI2_DATA0_LANE		1	 /* Data0 lane position: 2 */
+#define OV5640_CSI2_DATA1_LANE		2	 /* Data1 lane position: 3 */
+#endif
+/*************************************************************/
 #define OV5640_CSI2_PHY_THS_TERM	2
 #define OV5640_CSI2_PHY_THS_SETTLE	23
+
 #define OV5640_CSI2_PHY_TCLK_TERM	0
 #define OV5640_CSI2_PHY_TCLK_MISS	1
 #define OV5640_CSI2_PHY_TCLK_SETTLE	14
@@ -74,63 +83,14 @@ static int cam_inited;
 #define LV8093_PWR_ON			(!LV8093_PWR_OFF)
 #endif
 
-
-#ifdef CONFIG_VIDEO_LV8093
-static int lv8093_lens_power_set(enum v4l2_power power)
-{
-	static enum v4l2_power previous_pwr = V4L2_POWER_OFF;
-
-	switch (power) {
-	case V4L2_POWER_ON:
-		printk(KERN_DEBUG "lv8093_lens_power_set(ON)\n");
-		if (previous_pwr == V4L2_POWER_OFF) {
-			if (gpio_request(LV8093_PS_GPIO, "lv8093_ps") != 0) {
-				printk(KERN_WARNING "Could not request GPIO %d"
-					" for LV8093\n", LV8093_PS_GPIO);
-				return -EIO;
-			}
-
-			gpio_set_value(LV8093_PS_GPIO, LV8093_PWR_OFF);
-			gpio_direction_output(LV8093_PS_GPIO, true);
-		}
-		gpio_set_value(LV8093_PS_GPIO, LV8093_PWR_ON);
-		break;
-	case V4L2_POWER_OFF:
-		printk(KERN_DEBUG "lv8093_lens_power_set(OFF)\n");
-		gpio_free(LV8093_PS_GPIO);
-		break;
-	case V4L2_POWER_STANDBY:
-		printk(KERN_DEBUG "lv8093_lens_power_set(STANDBY)\n");
-		gpio_set_value(LV8093_PS_GPIO, LV8093_PWR_OFF);
-		break;
-	}
-	previous_pwr = power;
-	return 0;
-}
-
-static int lv8093_lens_set_prv_data(void *priv)
-{
-	struct omap34xxcam_hw_config *hwc = priv;
-
-	hwc->dev_index = 2;
-	hwc->dev_minor = 5;
-	hwc->dev_type = OMAP34XXCAM_SLAVE_LENS;
-	return 0;
-}
-
-struct lv8093_platform_data kunlun_lv8093_platform_data = {
-	.power_set      = lv8093_lens_power_set,
-	.priv_data_set  = lv8093_lens_set_prv_data,
-};
-#endif
-
 #if defined(CONFIG_VIDEO_OV5640) || defined(CONFIG_VIDEO_OV5640_MODULE)
 
 static struct omap34xxcam_sensor_config ov5640_hwc = {
 	.sensor_isp  = 0,
-	.capture_mem = OV5640_BIGGEST_FRAME_BYTE_SIZE * 4,
-	.ival_default	= { 1, 10 },
-	.isp_if = ISP_CSIA,
+//	.capture_mem = OV5640_BIGGEST_FRAME_BYTE_SIZE * 4,
+	.capture_mem = OV5640_BIGGEST_FRAME_BYTE_SIZE * 9,
+//	.ival_default	= { 1, 10 },
+//	.isp_if = ISP_CSIA,
 };
 
 static int ov5640_sensor_set_prv_data(struct v4l2_int_device *s, void *priv)
@@ -138,10 +98,15 @@ static int ov5640_sensor_set_prv_data(struct v4l2_int_device *s, void *priv)
 	struct omap34xxcam_hw_config *hwc = priv;
 
 	hwc->u.sensor		= ov5640_hwc;
+#if 1
 	hwc->dev_index		= 2;
 	hwc->dev_minor		= 5;
+#else
+//this setting would lead to "<isprsz_mode_store> set ISP resizer mode to manual" without sensor inilisization.
+	hwc->dev_index		= 0;
+	hwc->dev_minor		= 0;
+#endif
 	hwc->dev_type		= OMAP34XXCAM_SLAVE_SENSOR;
-
 	return 0;
 }
 
@@ -153,7 +118,11 @@ static struct isp_interface_config ov5640_if_config = {
 	.prestrobe 		= 0x0,
 	.shutter 		= 0x0,
 	.wenlog 		= ISPCCDC_CFG_WENLOG_AND,
-	.wait_hs_vs		= 0,
+/*******************************************/
+//	.wait_hs_vs		= 0,
+//  .wait_bayer_frame = 1,
+//  .wait_yuv_frame = 1,
+/*******************************************/
 	.cam_mclk		= ISP_OV5640_MCLK,
 	.raw_fmt_in		= ISPCCDC_INPUT_FMT_RG_GB,
 	.u.csi.crc 		= 0x0,
@@ -163,9 +132,11 @@ static struct isp_interface_config ov5640_if_config = {
 	.u.csi.strobe_clock_inv = 0x0,
 	.u.csi.vs_edge 		= 0x0,
 	.u.csi.channel 		= 0x0,
-	.u.csi.vpclk 		= 0x2,
+//	.u.csi.vpclk 		= 0x2,
+	.u.csi.vpclk 		= 0x1,
 	.u.csi.data_start 	= 0x0,
 	.u.csi.data_size 	= 0x0,
+//	.u.csi.format 		= V4L2_PIX_FMT_SGRBG10,
 	.u.csi.format 		= V4L2_PIX_FMT_YUYV,
 };
 
@@ -200,10 +171,16 @@ static int ov5640_sensor_power_set(struct v4l2_int_device *s, enum v4l2_power po
 
 		lanecfg.clk.pol = OV5640_CSI2_CLOCK_POLARITY;
 		lanecfg.clk.pos = OV5640_CSI2_CLOCK_LANE;
+#if 1
 		lanecfg.data[0].pol = OV5640_CSI2_DATA0_POLARITY;
+		//lanecfg.data[0].pol = 0;
 		lanecfg.data[0].pos = OV5640_CSI2_DATA0_LANE;
+		//lanecfg.data[0].pos = 0;
 		lanecfg.data[1].pol = OV5640_CSI2_DATA1_POLARITY;
+		//lanecfg.data[1].pol = 0;
 		lanecfg.data[1].pos = OV5640_CSI2_DATA1_LANE;
+		//lanecfg.data[1].pos = 0;
+#endif
 		lanecfg.data[2].pol = 0;
 		lanecfg.data[2].pos = 0;
 		lanecfg.data[3].pol = 0;

@@ -168,6 +168,7 @@ int isp_csi2_complexio_lanes_update(struct isp_csi2_device *isp_csi2,
 			ISPCSI2_COMPLEXIO_CFG1_CLOCK_POSITION_SHIFT);
 		currlanes_u->clk = false;
 	}
+printk("----very important------%s line:%d reg=0x%x\n", __func__, __LINE__, reg);
 	isp_reg_writel(isp_csi2->dev, reg, OMAP3_ISP_IOMEM_CSI2A,
 		       ISPCSI2_COMPLEXIO_CFG1);
 
@@ -214,6 +215,7 @@ int isp_csi2_complexio_lanes_get(struct isp_csi2_device *isp_csi2)
 
 	reg = isp_reg_readl(isp_csi2->dev, OMAP3_ISP_IOMEM_CSI2A,
 			    ISPCSI2_COMPLEXIO_CFG1);
+printk("------important---%s line:%d---0x%x\n", __func__, __LINE__, reg);
 	for (i = 0; i < 4; i++) {
 		currlanes->data[i].pol = (reg &
 					  ISPCSI2_COMPLEXIO_CFG1_DATA_POL_MASK(i + 1)) >>
@@ -643,6 +645,9 @@ int isp_csi2_ctrl_update(struct isp_csi2_device *isp_csi2, bool force_update)
 				reg |= ISPCSI2_CTRL_IF_EN_DISABLE;
 			currctrl_u->if_enable = false;
 		}
+/*********************/
+reg |= 1 << 15;
+/*********************/
 		isp_reg_writel(isp_csi2->dev, reg, OMAP3_ISP_IOMEM_CSI2A,
 			       ISPCSI2_CTRL);
 		isp_csi2->update_ctrl = false;
@@ -742,8 +747,7 @@ static void isp_csi2_ctx_validate(u8 *ctxnum)
  *
  * Returns 0 if successful, or -EINVAL if Virtual ID is not in range (0-3).
  **/
-int isp_csi2_ctx_config_virtual_id(struct isp_csi2_device *isp_csi2, u8 ctxnum,
-				   u8 virtual_id)
+int isp_csi2_ctx_config_virtual_id(struct isp_csi2_device *isp_csi2, u8 ctxnum, u8 virtual_id)
 {
 	struct isp_csi2_ctx_cfg *selected_ctx;
 	struct isp_csi2_ctx_cfg_update *selected_ctx_u;
@@ -2082,6 +2086,15 @@ int isp_csi2_reset(struct isp_csi2_device *isp_csi2)
 	reg |= ISPCSI2_SYSCONFIG_AUTO_IDLE_AUTO;
 	isp_reg_writel(isp_csi2->dev, reg, OMAP3_ISP_IOMEM_CSI2A,
 		       ISPCSI2_SYSCONFIG);
+/*************************************/
+printk("---------------check ispcsi2_sysconfig--%s line:%d\n", __func__, __LINE__);
+unsigned int val = 0;
+void * v_addr;
+
+v_addr = ioremap(0x480BD810, 4);
+val = *((volatile unsigned int *)v_addr);
+printk("-----------in %s line:%d-----csi2_sysconfig:0x%x\n", __func__, __LINE__,val);
+/**************************************/
 
 	isp_csi2->uses_videoport = false;
 	isp_csi2->update_complexio_cfg1 = false;
@@ -2123,14 +2136,17 @@ void isp_csi2_enable(struct isp_csi2_device *isp_csi2, int enable)
 		if (isp->dfs_csi2)
 			ispcsi2_dfs_dump(isp);
 #endif
+printk("--------------!@#$%$-----------------%s line:%d\n", __func__, __LINE__);
 		isp_csi2_ctx_config_eof_enabled(isp_csi2, 0, true);
 		isp_csi2_ctx_config_checksum_enabled(isp_csi2, 0, true);
 		isp_csi2_ctx_update(isp_csi2, 0, false);
 
 		isp_csi2_ctrl_config_ecc_enable(isp_csi2, true);
 		isp_csi2_ctrl_config_if_enable(isp_csi2, true);
-		isp_csi2_ctrl_update(isp_csi2, false);
+//		isp_csi2_ctrl_update(isp_csi2, false);
+		isp_csi2_ctrl_update(isp_csi2, true);
 	} else {
+printk("---------------!@#@$#$---------------%s line:%d\n", __func__, __LINE__);
 		isp_csi2_ctx_config_eof_enabled(isp_csi2, 0, false);
 		isp_csi2_ctx_config_checksum_enabled(isp_csi2, 0, false);
 		isp_csi2_ctx_update(isp_csi2, 0, false);
@@ -2192,7 +2208,7 @@ int isp_csi2_try_pipeline(struct isp_csi2_device *isp_csi2,
 		pipe->csia_out = CSI2_MEM;
 		break;
 	default:
-printk("888888888888888888888888__func:%s, line:%d\n", __func__, __LINE__);
+printk("-----------------------888888888%s, line:%d\n", __func__, __LINE__);
 		dev_err(dev, "Context config pixel format unsupported\n");
 		return -EINVAL;
 	}

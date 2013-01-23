@@ -3,7 +3,6 @@
  *
  * Sony ov5640 sensor driver
  *
- *
  * Copyright (C) 2008 Hewlett Packard
  *
  * Leverage mt9p012.c
@@ -36,298 +35,20 @@
 
 //#define OV5640_XCLK_NOM_1	24000000
 
-#if 0
-/* from OV5640ES_registerSetting_I2C_MIPI_2lane_def_080925.xls */
 const static struct ov5640_reg initial_list[] = {
-	{OV5640_REG_IMAGE_ORIENTATION, 0x03, I2C_8BIT},
-	{OV5640_REG_COARSE_INT_TIME, 0x0120, I2C_16BIT},
-	{OV5640_REG_ANALOG_GAIN_GLOBAL, 0x80, I2C_16BIT},
-	{0x300A, 0x80, I2C_8BIT},
-	{OV5640_REG_Y_OPBADDR_START_DI, 0x08, I2C_8BIT},
-	{OV5640_REG_Y_OPBADDR_END_DI, 0x37, I2C_8BIT},
-	{OV5640_REG_CHCODE_OUTCHSINGLE, 0x60, I2C_8BIT},
-	{OV5640_REG_OUTIF, 0x01, I2C_8BIT},
-	{OV5640_REG_RGPOF_RGPOFV2, 0x28, I2C_8BIT},
-	{OV5640_REG_CPCKAUTOEN, 0x00, I2C_8BIT},
-	{OV5640_REG_RGCPVFB, 0x60, I2C_8BIT},
-	{OV5640_REG_RGAZPDRV, 0x24, I2C_8BIT},
-	{OV5640_REG_RGAZTEST, 0x34, I2C_8BIT},
-	{OV5640_REG_RGVSUNLV, 0x3B, I2C_8BIT},
-	{OV5640_REG_CLPOWER, 0x30, I2C_8BIT},
-	{OV5640_REG_CLPOWERSP, 0x00, I2C_8BIT},
-	{OV5640_REG_ACLDIRV_TVADDCLP, 0x00, I2C_8BIT},
-	{OV5640_REG_OPB_CTRL, 0x0080, I2C_16BIT},
-	{0x30AB, 0x1C, I2C_8BIT},
-	{0x30B0, 0x32, I2C_8BIT},
-	{0x30B2, 0x83, I2C_8BIT},
-	{OV5640_REG_RAW10CH2V2P_LO, 0xD8, I2C_8BIT},
-	{OV5640_REG_RAW10CH2V2D_LO, 0x17, I2C_8BIT},
-	{OV5640_REG_COMP8CH1V2P_LO, 0xCF, I2C_8BIT},
-	{OV5640_REG_COMP8CH1V2D_LO, 0xF1, I2C_8BIT},
-	{OV5640_REG_RAW10CH1V2P_LO, 0xD8, I2C_8BIT},
-	{OV5640_REG_RAW10CH1V2D_LO, 0x17, I2C_8BIT},
-	{0x3302, 0x0A, I2C_8BIT},
-	{0x3303, 0x09, I2C_8BIT},
-	{OV5640_REG_RGTLPX, 0x05, I2C_8BIT},
-	{OV5640_REG_RGTCLKPREPARE, 0x04, I2C_8BIT},
-	{OV5640_REG_RGTCLKZERO, 0x15, I2C_8BIT},
-	{OV5640_REG_RGTCLKPRE, 0x03, I2C_8BIT},
-	{OV5640_REG_RGTCLKPOST, 0x13, I2C_8BIT},
-	{OV5640_REG_RGTCLKTRAIL, 0x05, I2C_8BIT},
-	{OV5640_REG_RGTHSEXIT, 0x0B, I2C_8BIT},
-	{0x302B, 0x38, I2C_8BIT},  /* for 18Mhz xclk */
-	{I2C_REG_TERM, I2C_VAL_TERM, I2C_LEN_TERM}
-};
-#endif
-const static struct ov5640_reg initial_list[] = {
-#if 0
-{0x3008, 0x42, I2C_8BIT}, 
-{0x3103, 0x03, I2C_8BIT},
-{0x3017, 0x00, I2C_8BIT},
-{0x3018, 0x00, I2C_8BIT},
-{0x3034, 0x1a, I2C_8BIT},
-{0x3037, 0x13, I2C_8BIT},
-{0x3108, 0x01, I2C_8BIT},
-{0x3630, 0x36, I2C_8BIT},
-{0x3631, 0x0e, I2C_8BIT},
-{0x3632, 0xe2, I2C_8BIT},
-{0x3633, 0x12, I2C_8BIT},
-{0x3621, 0xe0, I2C_8BIT},
-{0x3704, 0xa0, I2C_8BIT},
-{0x3703, 0x5a, I2C_8BIT},
-{0x3715, 0x78, I2C_8BIT},
-{0x3717, 0x01, I2C_8BIT},
-{0x370b, 0x60, I2C_8BIT},
-{0x3705, 0x1a, I2C_8BIT},
-{0x3905, 0x02, I2C_8BIT},
-{0x3906, 0x10, I2C_8BIT},
-{0x3901, 0x0a, I2C_8BIT},
-{0x3731, 0x12, I2C_8BIT},
-{0x3600, 0x08, I2C_8BIT},
-{0x3601, 0x33, I2C_8BIT},
-{0x302d, 0x60, I2C_8BIT},
-{0x3620, 0x52, I2C_8BIT},
-{0x371b, 0x20, I2C_8BIT},
-
-{0x471c, 0x50, I2C_8BIT},
-{0x3a13, 0x43, I2C_8BIT},
-{0x3a18, 0x00, I2C_8BIT},
-{0x3a19, 0xf8, I2C_8BIT},
-{0x3635, 0x13, I2C_8BIT},
-{0x3636, 0x03, I2C_8BIT},
-{0x3634, 0x40, I2C_8BIT},
-{0x3622, 0x01, I2C_8BIT},
-
-{0x3c01, 0x34, I2C_8BIT},
-{0x3c04, 0x28, I2C_8BIT},
-{0x3c05, 0x98, I2C_8BIT},
-{0x3c06, 0x00, I2C_8BIT},
-{0x3c08, 0x00, I2C_8BIT},
-{0x3c09, 0x1c, I2C_8BIT},
-{0x3c0a, 0x9c, I2C_8BIT},
-{0x3c0b, 0x40, I2C_8BIT},
-
-// timing
-{0x3800, 0x00, I2C_8BIT}, // HS
-{0x3801, 0x00, I2C_8BIT}, // HS
-{0x3802, 0x00, I2C_8BIT}, // VS
-{0x3804, 0x0a, I2C_8BIT}, // HW
-{0x3805, 0x3f, I2C_8BIT}, // HW
-{0x3810, 0x00, I2C_8BIT}, // H offset high
-{0x3811, 0x10, I2C_8BIT}, // H offset low
-{0x3812, 0x00, I2C_8BIT}, // V offset high
-{0x3708, 0x64, I2C_8BIT},
-{0x3a08, 0x01, I2C_8BIT}, // B50
-{0x4001, 0x02, I2C_8BIT}, // BLC start line
-{0x4005, 0x1a, I2C_8BIT}, // BLC always update
-{0x3000, 0x00, I2C_8BIT}, // system reset 0
-{0x3002, 0x1c, I2C_8BIT}, // system reset 2
-{0x3004, 0xff, I2C_8BIT},
-// clock enab I2C_8BIT,le 00
-{0x3006, 0xc3, I2C_8BIT}, // clock enable 2
-{0x300e, 0x45, I2C_8BIT}, // MIPI control, 2 lane, MIPI on
-{0x302e, 0x08, I2C_8BIT},
-{0x4300, 0x30, I2C_8BIT}, // YUV 422, YUYV
-{0x501f, 0x00, I2C_8BIT}, // ISP YUV 422
-{0x4407, 0x04, I2C_8BIT}, // JPEG QS
-{0x440e, 0x00, I2C_8BIT},
-{0x5000, 0xa7, I2C_8BIT}, // ISP control, Lenc on, gamma on, BPC on, WPC on, CIP on
-
-// AWB
-{0x5180, 0xff, I2C_8BIT},
-{0x5181, 0xf2, I2C_8BIT},
-{0x5182, 0x00, I2C_8BIT},
-{0x5183, 0x14, I2C_8BIT},
-{0x5184, 0x25, I2C_8BIT},
-{0x5185, 0x24, I2C_8BIT},
-{0x5186, 0x09, I2C_8BIT},
-{0x5187, 0x09, I2C_8BIT},
-{0x5188, 0x09, I2C_8BIT},
-{0x5189, 0x75, I2C_8BIT},
-{0x518a, 0x54, I2C_8BIT},
-{0x518b, 0xe0, I2C_8BIT},
-{0x518c, 0xb2, I2C_8BIT},
-{0x518d, 0x42, I2C_8BIT},
-{0x518e, 0x3d, I2C_8BIT},
-{0x518f, 0x56, I2C_8BIT},
-{0x5190, 0x46, I2C_8BIT},
-{0x5191, 0xf8, I2C_8BIT},
-{0x5192, 0x04, I2C_8BIT},
-{0x5193, 0x70, I2C_8BIT},
-{0x5194, 0xf0, I2C_8BIT},
-{0x5195, 0xf0, I2C_8BIT},
-{0x5196, 0x03, I2C_8BIT},
-{0x5197, 0x01, I2C_8BIT},
-{0x5198, 0x04, I2C_8BIT},
-{0x5199, 0x12, I2C_8BIT},
-{0x519a, 0x04, I2C_8BIT},
-{0x519b, 0x00, I2C_8BIT},
-{0x519c, 0x06, I2C_8BIT},
-{0x519d, 0x82, I2C_8BIT},
-{0x519e, 0x38, I2C_8BIT},
-
-// color matr I2C_8BIT,ix
-{0x5381, 0x1e, I2C_8BIT},
-{0x5382, 0x5b, I2C_8BIT},
-{0x5383, 0x08, I2C_8BIT},
-{0x5384, 0x0a, I2C_8BIT},
-{0x5385, 0x7e, I2C_8BIT},
-{0x5386, 0x88, I2C_8BIT},
-{0x5387, 0x7c, I2C_8BIT},
-{0x5388, 0x6c, I2C_8BIT},
-{0x5389, 0x10, I2C_8BIT},
-{0x538a, 0x01, I2C_8BIT},
-{0x538b, 0x98, I2C_8BIT},
-
-// CIP
-{0x5300, 0x08, I2C_8BIT},
-{0x5301, 0x30, I2C_8BIT},
-{0x5302, 0x10, I2C_8BIT},
-{0x5303, 0x00, I2C_8BIT},
-{0x5304, 0x08, I2C_8BIT},
-{0x5305, 0x30, I2C_8BIT},
-{0x5306, 0x08, I2C_8BIT},
-{0x5307, 0x16, I2C_8BIT},
-{0x5309, 0x08, I2C_8BIT},
-{0x530a, 0x30, I2C_8BIT},
-{0x530b, 0x04, I2C_8BIT},
-{0x530c, 0x06, I2C_8BIT},
-
-// gamma
-{0x5480, 0x01, I2C_8BIT},
-{0x5481, 0x08, I2C_8BIT},
-{0x5482, 0x14, I2C_8BIT},
-{0x5483, 0x28, I2C_8BIT},
-{0x5484, 0x51, I2C_8BIT},
-{0x5485, 0x65, I2C_8BIT},
-{0x5486, 0x71, I2C_8BIT},
-{0x5487, 0x7d, I2C_8BIT},
-{0x5488, 0x87, I2C_8BIT},
-{0x5489, 0x91, I2C_8BIT},
-{0x548a, 0x9a, I2C_8BIT},
-{0x548b, 0xaa, I2C_8BIT},
-{0x548c, 0xb8, I2C_8BIT},
-{0x548d, 0xcd, I2C_8BIT},
-{0x548e, 0xdd, I2C_8BIT},
-{0x548f, 0xea, I2C_8BIT},
-{0x5490, 0x1d, I2C_8BIT},
-
-{0x5580, 0x06, I2C_8BIT},
-{0x5583, 0x40, I2C_8BIT},
-{0x5584, 0x10, I2C_8BIT},
-{0x5589, 0x10, I2C_8BIT},
-
-{0x558a, 0x00, I2C_8BIT},
-{0x558b, 0xf8, I2C_8BIT},
-{0x501d, 0x40, I2C_8BIT},
-
-// lens corre I2C_8BIT,ction
-{0x5800, 0x23, I2C_8BIT},
-{0x5801, 0x14, I2C_8BIT},
-{0x5802, 0x0f, I2C_8BIT},
-{0x5803, 0x0f, I2C_8BIT},
-{0x5804, 0x12, I2C_8BIT},
-{0x5805, 0x26, I2C_8BIT},
-{0x5806, 0x0c, I2C_8BIT},
-{0x5807, 0x08, I2C_8BIT},
-{0x5808, 0x05, I2C_8BIT},
-{0x5809, 0x05, I2C_8BIT},
-{0x580a, 0x08, I2C_8BIT},
-{0x580b, 0x0d, I2C_8BIT},
-{0x580c, 0x08, I2C_8BIT},
-{0x580d, 0x03, I2C_8BIT},
-{0x580e, 0x00, I2C_8BIT},
-{0x580f, 0x00, I2C_8BIT},
-{0x5810, 0x03, I2C_8BIT},
-{0x5811, 0x09, I2C_8BIT},
-{0x5812, 0x07, I2C_8BIT},
-{0x5813, 0x03, I2C_8BIT},
-{0x5814, 0x00, I2C_8BIT},
-{0x5815, 0x01, I2C_8BIT},
-{0x5816, 0x03, I2C_8BIT},
-{0x5817, 0x08, I2C_8BIT},
-{0x5818, 0x0d, I2C_8BIT},
-{0x5819, 0x08, I2C_8BIT},
-{0x581a, 0x05, I2C_8BIT},
-{0x581b, 0x06, I2C_8BIT},
-{0x581c, 0x08, I2C_8BIT},
-{0x581d, 0x0e, I2C_8BIT},
-{0x581e, 0x29, I2C_8BIT},
-{0x581f, 0x17, I2C_8BIT},
-{0x5820, 0x11, I2C_8BIT},
-{0x5821, 0x11, I2C_8BIT},
-{0x5822, 0x15, I2C_8BIT},
-{0x5823, 0x28, I2C_8BIT},
-{0x5824, 0x46, I2C_8BIT},
-{0x5825, 0x26, I2C_8BIT},
-{0x5826, 0x08, I2C_8BIT},
-{0x5827, 0x26, I2C_8BIT},
-{0x5828, 0x64, I2C_8BIT},
-{0x5829, 0x26, I2C_8BIT},
-{0x582a, 0x24, I2C_8BIT},
-{0x582b, 0x22, I2C_8BIT},
-{0x582c, 0x24, I2C_8BIT},
-{0x582d, 0x24, I2C_8BIT},
-{0x582e, 0x06, I2C_8BIT},
-{0x582f, 0x22, I2C_8BIT},
-{0x5830, 0x40, I2C_8BIT},
-{0x5831, 0x42, I2C_8BIT},
-{0x5832, 0x24, I2C_8BIT},
-{0x5833, 0x26, I2C_8BIT},
-{0x5834, 0x24, I2C_8BIT},
-{0x5835, 0x22, I2C_8BIT},
-{0x5836, 0x22, I2C_8BIT},
-{0x5837, 0x26, I2C_8BIT},
-{0x5838, 0x44, I2C_8BIT},
-{0x5839, 0x24, I2C_8BIT},
-{0x583a, 0x26, I2C_8BIT},
-{0x583b, 0x28, I2C_8BIT},
-{0x583c, 0x42, I2C_8BIT},
-{0x583d, 0xce, I2C_8BIT},
-
-{0x5025, 0x00, I2C_8BIT},
-{0x3a0f, 0x30, I2C_8BIT},
-{0x3a10, 0x28, I2C_8BIT},
-{0x3a1b, 0x30, I2C_8BIT},
-{0x3a1e, 0x26, I2C_8BIT},
-{0x3a11, 0x60, I2C_8BIT},
-{0x3a1f, 0x14, I2C_8BIT},
-/*{0x4202, 0x0f, I2C_8BIT},*/
-{0x4202, 0x00, I2C_8BIT},
-{0x3008, 0x02, I2C_8BIT},
-#endif
-
 {0x3103, 0x11, I2C_8BIT}, 
 {0x3008, 0x82, I2C_8BIT},
 {0x3008, 0x42, I2C_8BIT},
 {0x3103, 0x03, I2C_8BIT},
-//{0x3017, 0x00, I2C_8BIT},
+//{0x3017, 0xec, I2C_8BIT},
 {0x3017, 0xef, I2C_8BIT},
-//{0x3018, 0x00, I2C_8BIT},
+//{0x3018, 0xc0, I2C_8BIT},
 {0x3018, 0xc3, I2C_8BIT},
 {0x3034, 0x1a, I2C_8BIT},
 {0x3035, 0x11, I2C_8BIT},
-{0x3036, 0x54, I2C_8BIT},
+//{0x3036, 0x54, I2C_8BIT},
+//vga milt=18
+{0x3036, 0x12, I2C_8BIT},
 {0x3037, 0x13, I2C_8BIT},
 {0x3108, 0x01, I2C_8BIT},
 {0x3630, 0x36, I2C_8BIT},
@@ -393,11 +114,15 @@ const static struct ov5640_reg initial_list[] = {
 {0x3811, 0x10, I2C_8BIT},
 {0x3812, 0x00, I2C_8BIT},
 {0x3813, 0x04, I2C_8BIT},
-{0x3618, 0x04, I2C_8BIT},
-{0x3612, 0x2b, I2C_8BIT},
+//{0x3618, 0x04, I2C_8BIT},
+{0x3618, 0x00, I2C_8BIT},
+//{0x3612, 0x2b, I2C_8BIT},
+{0x3612, 0x29, I2C_8BIT},
 {0x3708, 0x64, I2C_8BIT},
-{0x3709, 0x12, I2C_8BIT},
-{0x370c, 0x00, I2C_8BIT},
+//{0x3709, 0x12, I2C_8BIT},
+{0x3709, 0x52, I2C_8BIT},
+//{0x370c, 0x00, I2C_8BIT},
+{0x370c, 0x03, I2C_8BIT},
 {0x3a02, 0x07, I2C_8BIT},
 {0x3a03, 0xb0, I2C_8BIT},
 {0x3a08, 0x01, I2C_8BIT},
@@ -419,11 +144,17 @@ const static struct ov5640_reg initial_list[] = {
 {0x300e, 0x45, I2C_8BIT},
 {0x302e, 0x08, I2C_8BIT},
 {0x4300, 0x30, I2C_8BIT},
-{0x4837, 0x0a, I2C_8BIT},
+//{0x4837, 0x0a, I2C_8BIT},
+{0x4837, 0x24, I2C_8BIT},
 {0x501f, 0x00, I2C_8BIT},
 {0x440e, 0x00, I2C_8BIT},
 {0x5000, 0xa7, I2C_8BIT},
-{0x5001, 0x83, I2C_8BIT},
+/**/
+{0x3824, 0x02, I2C_8BIT},
+//{0x5001, 0x83, I2C_8BIT},
+{0x5001, 0xff, I2C_8BIT},
+/******/
+{0x3503, 0x00, I2C_8BIT},
 {0x5180, 0xff, I2C_8BIT},
 {0x5181, 0xf2, I2C_8BIT},
 {0x5182, 0x00, I2C_8BIT},
@@ -570,13 +301,11 @@ const static struct ov5640_reg initial_list[] = {
 {0x3a11, 0x60, I2C_8BIT},
 {0x3a1f, 0x14, I2C_8BIT},
 
-{0x4202, 0x00, I2C_8BIT},
+//{0x4202, 0x00, I2C_8BIT},
 
 {0x3008, 0x02, I2C_8BIT},
 {I2C_REG_TERM, I2C_VAL_TERM, I2C_LEN_TERM}
 };
-
-
 
 /**
  * struct ov5640_sensor - main structure for storage of sensor information
@@ -589,7 +318,6 @@ const static struct ov5640_reg initial_list[] = {
  * @ver: ov5640 chip version
  * @fps: frames per second value
  */
-#if 1
 struct ov5640_sensor {
 	const struct ov5640_platform_data *pdata;
 	struct v4l2_int_device *v4l2_int_device;
@@ -602,7 +330,6 @@ struct ov5640_sensor {
 	bool resuming;
 };
 
-#endif
 static struct ov5640_sensor ov5640;
 static struct i2c_driver ov5640sensor_i2c_driver;
 static unsigned long xclk_current = OV5640_XCLK_NOM_1;
@@ -620,7 +347,6 @@ const static struct v4l2_fmtdesc ov5640_formats[] = {
 
 static enum v4l2_power current_power_state;
 
-
 /* Structure of Sensor settings that change with image size */
 static struct ov5640_sensor_settings ov5640_settings[] = {
 	 /* NOTE: must be in same order as image_size array */
@@ -630,92 +356,56 @@ static struct ov5640_sensor_settings ov5640_settings[] = {
 		.clk = {
 			.pre_pll_div = 1,
 			.pll_mult = 18,
-			.post_pll_div = 1,
+//			.post_pll_div = 1,
 			.vt_pix_clk_div = 10,
 			.vt_sys_clk_div = 1,
 		},
 		.mipi = {
-			.data_lanes = 1,
+			.data_lanes = 2,
 			.ths_prepare = 2,
-			.ths_zero = 5,
+			//.ths_zero = 5,
+			.ths_zero = 1,
 			.ths_settle_lower = 8,
 			.ths_settle_upper = 28,
 		},
-#if 0
-		.frame = {
-			.frame_len_lines_min = 629,
-			.line_len_pck = 3440,
-			.x_addr_start = 813,
-			.x_addr_end = 2466,
-			.y_addr_start = 0,
-			.y_addr_end = 2463,
-			.x_output_size = 410,
-			.y_output_size = 308,
-			.x_even_inc = 5,
-			.x_odd_inc = 3,
-			.y_even_inc = 9,
-			.y_odd_inc = 7,
-			.v_mode_add = 0,
-			.h_mode_add = 0,
-			.h_add_ave = 1,
-		},
-#endif 
-	     .frame = {
-	         .frame_len_lines_min = 629,
-	         .line_len_pck = 3440,
-	         .x_addr_start = 813,
-	         .x_addr_end = 2466,
-	         .y_addr_start = 0,
-	         .y_addr_end = 2463,
-	         .x_output_size = 320,
-	         .y_output_size = 240,
-	         .x_total_size = 2844,
-	         .y_total_size = 1968,
-	         .isp_x_offset = 16,
-	                 .isp_y_offset = 6,
-	                 .x_odd_inc = 1,
-	                 .x_even_inc = 1,
-	                 .y_odd_inc = 1,
-	                 .y_even_inc = 1,
-	     },
+	    .frame = {
+	        .frame_len_lines_min = 629,
+	        .line_len_pck = 3440,
+	        .x_addr_start = 813,
+	        .x_addr_end = 2466,
+	        .y_addr_start = 0,
+	        .y_addr_end = 2463,
+	        .x_output_size = 320,
+	        .y_output_size = 240,
+	        .x_total_size = 2844,
+	        .y_total_size = 1968,
+	        .isp_x_offset = 16,
+	        .isp_y_offset = 6,
+	        .x_odd_inc = 1,
+	        .x_even_inc = 1,
+	        .y_odd_inc = 1,
+	        .y_even_inc = 1,
+	    },
 
 	},
 
-	/* HALF_MP */
+	/* VGA */
 	{
 		.clk = {
-			.pre_pll_div = 1,
+//			.pre_pll_div = 1,
+			.pre_pll_div = 3,
 			.pll_mult = 18,
-			.post_pll_div = 1,
+//			.post_pll_div = 1,
 			.vt_pix_clk_div = 10,
 			.vt_sys_clk_div = 1,
 		},
 		.mipi = {
-			.data_lanes = 1,
+			.data_lanes = 2,
 			.ths_prepare = 2,
 			.ths_zero = 5,
 			.ths_settle_lower = 8,
 			.ths_settle_upper = 28,
 		},
-#if 0
-		.frame = {
-			.frame_len_lines_min = 629,
-			.line_len_pck = 3440,
-			.x_addr_start = 0,
-			.x_addr_end = 3279,
-			.y_addr_start = 0,
-			.y_addr_end = 2463,
-			.x_output_size = 820,
-			.y_output_size = 616,
-			.x_even_inc = 5,
-			.x_odd_inc = 3,
-			.y_even_inc = 5,
-			.y_odd_inc = 3,
-			.v_mode_add = 0,
-			.h_mode_add = 0,
-			.h_add_ave = 1,
-		},
-#endif
         .frame = {
             .frame_len_lines_min = 629,
             .line_len_pck = 3440,
@@ -724,17 +414,16 @@ static struct ov5640_sensor_settings ov5640_settings[] = {
             .y_addr_start = 0,
             .y_addr_end = 2463,
             .x_output_size = 640,
-            .y_output_size = 320,
+            .y_output_size = 480,
             .x_total_size = 2844,
             .y_total_size = 1968,
             .isp_x_offset = 16,
-                    .isp_y_offset = 6,
-                    .x_odd_inc = 1,
-                    .x_even_inc = 1,
-                    .y_odd_inc = 1,
-                    .y_even_inc = 1,
+            .isp_y_offset = 6,
+            .x_odd_inc = 1,
+            .x_even_inc = 1,
+            .y_odd_inc = 1,
+            .y_even_inc = 1,
         },
-
 	},
 
 	/* 729p_MP */
@@ -742,37 +431,18 @@ static struct ov5640_sensor_settings ov5640_settings[] = {
 		.clk = {
 			.pre_pll_div = 1,
 			.pll_mult = 36,
-			.post_pll_div = 1,
+			//.post_pll_div = 1,
 			.vt_pix_clk_div = 10,
 			.vt_sys_clk_div = 1,
 		},
 		.mipi = {
-			.data_lanes = 1,
+			.data_lanes = 2,
 			.ths_prepare = 6,
 			.ths_zero = 9,
 			.ths_settle_lower = 23,
 			.ths_settle_upper = 59,
 		},
-#if 0
-		.frame = {
-			.frame_len_lines_min = 1250,
-			.line_len_pck = 3456,
-			.x_addr_start = 344,
-			.x_addr_end = 2936,
-			.y_addr_start = 503,
-			.y_addr_end = 1960,
-			.x_output_size = 1296,
-			.y_output_size = 729,
-			.x_even_inc = 1,
-			.x_odd_inc = 3,
-			.y_even_inc = 1,
-			.y_odd_inc = 3,
-			.v_mode_add = 0,
-			.h_mode_add = 0,
-			.h_add_ave = 1,
-		},
-#endif 
-       .frame = {
+        .frame = {
            .frame_len_lines_min = 1250,
            .line_len_pck = 3456,
            .x_addr_start = 344,
@@ -784,11 +454,11 @@ static struct ov5640_sensor_settings ov5640_settings[] = {
            .x_total_size = 2500,
            .y_total_size = 1120,
            .isp_x_offset = 16,
-                   .isp_y_offset = 4,
-                   .x_odd_inc = 1,
-                   .x_even_inc = 1,
-                   .y_odd_inc = 1,
-                   .y_even_inc = 1,
+           .isp_y_offset = 4,
+           .x_odd_inc = 1,
+           .x_even_inc = 1,
+           .y_odd_inc = 1,
+           .y_even_inc = 1,
        },
 
 	},
@@ -798,7 +468,7 @@ static struct ov5640_sensor_settings ov5640_settings[] = {
         .clk = {
             .pre_pll_div = 1,
             .pll_mult = 18,
-            .post_pll_div = 1,
+            //.post_pll_div = 1,
             .vt_pix_clk_div = 10,
             .vt_sys_clk_div = 1,
         },
@@ -821,50 +491,50 @@ static struct ov5640_sensor_settings ov5640_settings[] = {
             .x_total_size = 2500,
             .y_total_size = 1120,
             .isp_x_offset = 16,
-                    .isp_y_offset = 4,
-                    .x_odd_inc = 1,
-                    .x_even_inc = 1,
-                    .y_odd_inc = 1,
-                    .y_even_inc = 1,
+            .isp_y_offset = 4,
+            .x_odd_inc = 1,
+            .x_even_inc = 1,
+            .y_odd_inc = 1,
+            .y_even_inc = 1,
         },
-    },
+	},
 
-	   /* FIVE_MP */
-	   {
-	       .clk = {
-	           .pre_pll_div = 1,
-	           .pll_mult = 24,
-	           .post_pll_div = 1,
-	           .vt_pix_clk_div = 10,
-	           .vt_sys_clk_div = 1,
-	       },
-	       .mipi = {
-	           .data_lanes = 2,
-	           .ths_prepare = 2,
-	           .ths_zero = 4,
-	           .ths_settle_lower = 8,
-	           .ths_settle_upper = 24,
-	       },
-	       .frame = {
-	           .frame_len_lines_min = 2510,
-	           .line_len_pck = 3440,
-	           .x_addr_start = 0,
-	           .x_addr_end = 2591,
-	           .y_addr_start = 0,
-	           .y_addr_end = 1943,
-	           .x_output_size = 2592,
-	           .y_output_size = 1944,
-	           .x_total_size = 2844,
-	           .y_total_size = 1968,
-	           .isp_x_offset = 16,
-	                   .isp_y_offset = 6,
-	                   .x_odd_inc = 1,
-	                   .x_even_inc = 1,
-	                   .y_odd_inc = 1,
-	                   .y_even_inc = 1,
-	       },
-	   },
-
+	 /* FIVE_MP */
+	{
+	    .clk = {
+	        .pre_pll_div = 1,
+	        .pll_mult = 24,
+	        //.post_pll_div = 1,
+	        .vt_pix_clk_div = 10,
+	        .vt_sys_clk_div = 1,
+	    },
+	    .mipi = {
+	        .data_lanes = 2,
+	        .ths_prepare = 2,
+	        //.ths_zero = 4,
+	        .ths_zero = 6,
+	        .ths_settle_lower = 8,
+	        .ths_settle_upper = 24,
+	    },
+	    .frame = {
+	        .frame_len_lines_min = 2510,
+	        .line_len_pck = 3440,
+	        .x_addr_start = 0,
+	        .x_addr_end = 2591,
+	        .y_addr_start = 0,
+	        .y_addr_end = 1943,
+	        .x_output_size = 2592,
+	        .y_output_size = 1944,
+	        .x_total_size = 2844,
+	        .y_total_size = 1968,
+	        .isp_x_offset = 16,
+	        .isp_y_offset = 6,
+	        .x_odd_inc = 1,
+	        .x_even_inc = 1,
+	        .y_odd_inc = 1,
+	        .y_even_inc = 1,
+	    },
+	},
 };
 
 #define OV5640_MODES_COUNT ARRAY_SIZE(ov5640_settings)
@@ -998,6 +668,7 @@ static int ov5640_read_reg(struct i2c_client *client, u16 data_length, u16 reg,
 		return 0;
 	}
 	v4l_err(client, "read from offset 0x%x error %d", reg, err);
+
 	return err;
 }
 
@@ -1241,8 +912,6 @@ static int ov5640_set_orientation(struct i2c_client *client, u32 ver)
 	return true;
 }
 
-
-
 /**
  * ov5640sensor_set_exposure_time - sets exposure time per input value
  * @exp_time: exposure time to be set on device (in usec)
@@ -1405,7 +1074,6 @@ static int ov5640sensor_set_gain(u16 lineargain, struct v4l2_int_device *s,
 	return true;
 }
 
-
 /**
  * ov5640_update_clocks - calcs sensor clocks based on sensor settings.
  * @isize: image size enum
@@ -1414,8 +1082,8 @@ static int ov5640_update_clocks(u32 xclk, unsigned isize)
 {
 	current_clk.vco_clk =
 			xclk * ov5640_settings[isize].clk.pll_mult /
-			ov5640_settings[isize].clk.pre_pll_div /
-			ov5640_settings[isize].clk.post_pll_div;
+			ov5640_settings[isize].clk.pre_pll_div;// / /
+//			ov5640_settings[isize].clk.post_pll_div;
 
 	current_clk.vt_pix_clk = current_clk.vco_clk * 2 /
 			(ov5640_settings[isize].clk.vt_pix_clk_div *
@@ -1428,11 +1096,18 @@ static int ov5640_update_clocks(u32 xclk, unsigned isize)
 
 	current_clk.ddr_clk = current_clk.mipi_clk / 2;
 
-	printk("%s...........%d\n",__func__,__LINE__);
 	printk(KERN_DEBUG "OV5640: xclk=%u, vco_clk=%u, "
 		"vt_pix_clk=%u,  mipi_clk=%u,  ddr_clk=%u\n",
 		xclk, current_clk.vco_clk, current_clk.vt_pix_clk,
 		current_clk.mipi_clk, current_clk.ddr_clk);
+
+/******************************************************/
+   printk("%s...........%d\n",__func__,__LINE__);
+   printk("OV5640: xclk=%u, vco_clk=%u, "
+       "vt_pix_clk=%u,  mipi_clk=%u,  ddr_clk=%u\n",
+       xclk, current_clk.vco_clk, current_clk.vt_pix_clk,
+       current_clk.mipi_clk, current_clk.ddr_clk);
+/******************************************************/
 
 	return 0;
 }
@@ -1444,7 +1119,7 @@ static int ov5640_update_clocks(u32 xclk, unsigned isize)
  */
 static int ov5640_setup_pll(struct i2c_client *client, unsigned isize)
 {
-#if 0
+#if 1
 	u32 rgpltd_reg;
 	u32 rgpltd[3] = {2, 0, 1};
 	printk("%s...........%d\n",__func__,__LINE__);
@@ -1474,6 +1149,15 @@ static int ov5640_setup_pll(struct i2c_client *client, unsigned isize)
 		ov5640_settings[isize].clk.pll_mult, rgpltd_reg,
 		ov5640_settings[isize].clk.vt_pix_clk_div,
 		ov5640_settings[isize].clk.vt_sys_clk_div);
+/*******************************************/
+	printk("OV5640: pre_pll_clk_div=%u, pll_mult=%u, "
+		"rgpltd=0x%x, vt_pix_clk_div=%u, vt_sys_clk_div=%u\n",
+		ov5640_settings[isize].clk.pre_pll_div,
+		ov5640_settings[isize].clk.pll_mult, rgpltd_reg,
+		ov5640_settings[isize].clk.vt_pix_clk_div,
+		ov5640_settings[isize].clk.vt_sys_clk_div);
+/*******************************************/
+
 #endif
 	return 0;
 }
@@ -1501,12 +1185,12 @@ static int ov5640_setup_mipi(struct v4l2_int_device *s, unsigned isize)
 
 //	ov5640_write_reg(client, OV5640_REG_RGTHSZERO, \
 		ov5640_settings[isize].mipi.ths_zero, I2C_8BIT);
-
+#if 0
 ov5640_write_reg(client,0x4800, 0x04, I2C_8BIT);
 ov5640_write_reg(client,0x4801, 0x04, I2C_8BIT);
 ov5640_write_reg(client,0x4805, 0x10, I2C_8BIT);
 ov5640_write_reg(client,0x4805, 0x10, I2C_8BIT);
-
+#endif
 	/* Set number of lanes in sensor */
 	if (ov5640_settings[isize].mipi.data_lanes == 2)
 		ov5640_write_reg(client, 0x300e, 0x45, I2C_8BIT);
@@ -1522,10 +1206,12 @@ ov5640_write_reg(client,0x4805, 0x10, I2C_8BIT);
 	sensor->pdata->csi2_lane_count(s,
 				       ov5640_settings[isize].mipi.data_lanes);
 
+printk("---------test phy----%s line:%d current_clk.mipi_clk:%ld ov5640_settings[isize].mipi.ths_settle_lower:%d\nov5640_settings[isize].mipi.ths_settle_upper:%d ov5640_settings[isize].mipi.ths_zero:%d\n", __func__, __LINE__, current_clk.mipi_clk, ov5640_settings[isize].mipi.ths_settle_lower, ov5640_settings[isize].mipi.ths_settle_upper, ov5640_settings[isize].mipi.ths_zero);
 	/* Send settings to ISP-CSI2 Receiver PHY */
 	sensor->pdata->csi2_calc_phy_cfg0(s, current_clk.mipi_clk,
 		ov5640_settings[isize].mipi.ths_settle_lower,
 		ov5640_settings[isize].mipi.ths_settle_upper);
+
 
 	/* Dump some registers for debug purposes */
 	printk(KERN_DEBUG "ov5640:THSPREPARE=0x%02X\n",
@@ -1598,28 +1284,26 @@ static int ov5640_configure_frame(struct i2c_client *client, unsigned isize)
 	ov5640_write_reg(client, 0x3820, 0x41, I2C_8BIT);
 	ov5640_write_reg(client, 0x3821, 0x07, I2C_8BIT);
 
-	ov5640_write_reg(client, 0x3803, 0xfa, I2C_8BIT);
-	ov5640_write_reg(client, 0x3806, 0x06, I2C_8BIT);
-	ov5640_write_reg(client, 0x3807, 0xa9, I2C_8BIT);
-	ov5640_write_reg(client, 0x3808, 0x05, I2C_8BIT);
-	ov5640_write_reg(client, 0x3809, 0x00, I2C_8BIT);
-	ov5640_write_reg(client, 0x380a, 0x02, I2C_8BIT);
-	ov5640_write_reg(client, 0x380b, 0xd0, I2C_8BIT);
+	ov5640_write_reg(client, 0x3803, 0x04, I2C_8BIT);
+	ov5640_write_reg(client, 0x3806, 0x07, I2C_8BIT);
+	ov5640_write_reg(client, 0x3807, 0x9b, I2C_8BIT);
+	ov5640_write_reg(client, 0x3808, 0x02, I2C_8BIT);
+	ov5640_write_reg(client, 0x3809, 0x80, I2C_8BIT);
+	ov5640_write_reg(client, 0x380a, 0x01, I2C_8BIT);
+	ov5640_write_reg(client, 0x380b, 0xe0, I2C_8BIT);
 	ov5640_write_reg(client, 0x380c, 0x07, I2C_8BIT);
-	ov5640_write_reg(client, 0x380d, 0x64, I2C_8BIT);
-	ov5640_write_reg(client, 0x380e, 0x02, I2C_8BIT);
-	ov5640_write_reg(client, 0x380f, 0xe4, I2C_8BIT);
-	ov5640_write_reg(client, 0x3813, 0x04, I2C_8BIT);
-
+	ov5640_write_reg(client, 0x380d, 0x68, I2C_8BIT);
+	ov5640_write_reg(client, 0x380e, 0x03, I2C_8BIT);
+	ov5640_write_reg(client, 0x380f, 0xd8, I2C_8BIT);
+	ov5640_write_reg(client, 0x3813, 0x06, I2C_8BIT);
+	
 	ov5640_write_reg(client, 0x3618, 0x00, I2C_8BIT);
 	ov5640_write_reg(client, 0x3612, 0x29, I2C_8BIT);
 	ov5640_write_reg(client, 0x3709, 0x52, I2C_8BIT);
 	ov5640_write_reg(client, 0x370c, 0x03, I2C_8BIT);
 
 	return 0;
-
 }
-
 
  /**
  * ov5640_configure_test_pattern - Configure 3 possible test pattern modes
@@ -1684,6 +1368,7 @@ static int ov5640_configure_test_pattern(int mode, struct v4l2_int_device *s,
 	lvc->current_value = mode;
 	return 0;
 #endif
+
 	return true;
 }
 /**
@@ -1696,6 +1381,50 @@ static int ov5640_configure_test_pattern(int mode, struct v4l2_int_device *s,
  * Returns zero if successful, or non-zero otherwise.
  * The actual frame period is returned in fper.
  */
+/*******************************************************/
+struct ov5640_reg ov5640_preview_tbl[] = {
+/* @@ MIPI_2lane_5M to vga(YUV) 30fps 99 1280 960 98 0 0 */
+    {0x3503, 0x00, I2C_8BIT}, /* enable AE back from capture to preview */
+    {0x3035, 0x11, I2C_8BIT},
+    {0x3036, 0x38, I2C_8BIT},
+    {0x3820, 0x41, I2C_8BIT},
+    {0x3821, 0x07, I2C_8BIT},
+    {0x3814, 0x31, I2C_8BIT},
+    {0x3815, 0x31, I2C_8BIT},
+    {0x3803, 0x04, I2C_8BIT},
+    {0x3807, 0x9b, I2C_8BIT},
+    {0x3808, 0x05, I2C_8BIT},
+    {0x3809, 0x00, I2C_8BIT},
+    {0x380a, 0x03, I2C_8BIT},
+    {0x380b, 0xc0, I2C_8BIT},
+    {0x380c, 0x07, I2C_8BIT},
+    {0x380d, 0x68, I2C_8BIT},
+    {0x380e, 0x04, I2C_8BIT},
+    {0x380f, 0x9c, I2C_8BIT},
+    {0x3813, 0x06, I2C_8BIT},
+    {0x3618, 0x00, I2C_8BIT},
+    {0x3612, 0x29, I2C_8BIT},
+    {0x3708, 0x64, I2C_8BIT},
+    {0x3709, 0x52, I2C_8BIT},
+    {0x370c, 0x03, I2C_8BIT},
+    {0x5001, 0xa3, I2C_8BIT},
+    {0x4004, 0x02, I2C_8BIT},
+    {0x4005, 0x1a, I2C_8BIT},//0x18
+    {0x4837, 0x15, I2C_8BIT},//0x44
+    {0x4713, 0x03, I2C_8BIT},
+    {0x4407, 0x04, I2C_8BIT},
+    {0x460b, 0x35, I2C_8BIT},
+    {0x460c, 0x22, I2C_8BIT},
+    {0x3824, 0x02, I2C_8BIT},
+    {0x3a02, 0x0b, I2C_8BIT},
+    {0x3a03, 0x88, I2C_8BIT},
+    {0x3a14, 0x0b, I2C_8BIT},
+    {0x3a15, 0x86, I2C_8BIT},
+};
+
+
+/*******************************************************/
+
 static int ov5640_configure(struct v4l2_int_device *s)
 {
 	struct ov5640_sensor *sensor = s->priv;
@@ -1703,14 +1432,14 @@ static int ov5640_configure(struct v4l2_int_device *s)
 	unsigned isize = isize_current;
 	int err, i;
 	struct vcontrol *lvc = NULL;
-	printk("%s.................................................%d\n",__func__,__LINE__);
+	printk("%s............................................%d\n",__func__,__LINE__);
 
 	err = ov5640_write_reg(client, OV5640_REG_SW_RESET, 0x01, I2C_8BIT);
 	mdelay(5);
 
 	ov5640_write_regs(client, initial_list);
 
-//	ov5640_setup_pll(client, isize);
+	//ov5640_setup_pll(client, isize);
 
 	ov5640_setup_mipi(s, isize);
 
@@ -1720,10 +1449,12 @@ static int ov5640_configure(struct v4l2_int_device *s)
 //	ov5640_set_orientation(client, sensor->ver);
 
 	sensor->pdata->csi2_cfg_vp_out_ctrl(s, 2);
-	sensor->pdata->csi2_ctrl_update(s, false);
+//	sensor->pdata->csi2_ctrl_update(s, false);
+	sensor->pdata->csi2_ctrl_update(s, true);
 
 	sensor->pdata->csi2_cfg_virtual_id(s, 0, 0);
-	sensor->pdata->csi2_ctx_update(s, 0, false);
+//	sensor->pdata->csi2_ctx_update(s, 0, false);
+	sensor->pdata->csi2_ctx_update(s, 0, true);
 //	ov5640_set_virtual_id(client, OV5640_CSI2_VIRTUAL_ID);
 	/* Set initial exposure and gain */
 	i = find_vctrl(V4L2_CID_EXPOSURE);
@@ -1748,17 +1479,143 @@ static int ov5640_configure(struct v4l2_int_device *s)
 				sensor->v4l2_int_device, lvc);
 	}
 #endif
+
+/**********************************************************/
+ov5640_write_reg(client, 0x4800, 0x24, I2C_8BIT);
+msleep(10);
+ov5640_write_reg(client, 0x4202, 0x0f, I2C_8BIT);
+
+msleep(66);
+ov5640_write_regs(client, ov5640_preview_tbl);
+
+ov5640_write_reg(client, 0x350b, (0x7f & 0x3ff) & 0xff, I2C_8BIT);
+ov5640_write_reg(client, 0x350a, ((0x7f & 0x3ff) & 0xff) >> 8, I2C_8BIT);
+
+ov5640_write_reg(client, 0x3502, (0x1207 & 0x0f) << 4, I2C_8BIT);
+ov5640_write_reg(client, 0x3501, (0x1207 & 0xfff) >> 4, I2C_8BIT);
+ov5640_write_reg(client, 0x3501, 0x1207 >> 12, I2C_8BIT);
+
+/*************/
+//for exposure conversion
+//...
+//set ae_target
+//...
+/*************/
+
+ov5640_write_reg(client, 0x3503, 0x0, I2C_8BIT);
+/**********************************************************/
+
 	/* configure streaming ON */
 	err = ov5640_write_reg(client, 0x4202, 0x00, I2C_8BIT);
 	mdelay(1);
 
-#if 0 
-/***************added by myself*******/
-	unsigned int val = 0;
-	val = *((volatile unsigned int *)0x48072008);
-	printk("---xxxxxxxxxx------func:%s line:%d STAT val:0x%x", __func__, __LINE__, val);
-/*****************************************/
-#endif
+/*********************************/
+msleep(10);
+ov5640_write_reg(client, 0x4800, 0x04, I2C_8BIT);
+/*********************************/
+unsigned int val = 0;
+int x = 0;
+void * v_addr;
+
+v_addr = ioremap(0x48002116, 2);
+val = *((volatile unsigned int *)v_addr);
+printk("----------------csi2_dx2:0x%x\n", val);
+
+v_addr = ioremap(0x48002118, 2);
+val = *((volatile unsigned int *)v_addr);
+printk("----------------csi2_dy2:0x%x\n", val);
+
+v_addr = ioremap(0x48002134, 2);
+val = *((volatile unsigned int *)v_addr);
+printk("----------------csi2_dx0:0x%x\n", val);
+
+v_addr = ioremap(0x48002136, 2);
+val = *((volatile unsigned int *)v_addr);
+printk("----------------csi2_dy0:0x%x\n", val);
+
+v_addr = ioremap(0x48002138, 2);
+val = *((volatile unsigned int *)v_addr);
+printk("----------------csi2_dx1:0x%x\n", val);
+
+v_addr = ioremap(0x4800213a, 2);
+val = *((volatile unsigned int *)v_addr);
+printk("----------------csi2_dy1:0x%x\n", val);
+
+/********************************************/
+
+v_addr = ioremap(0x480BD810, 4);
+val = *((volatile unsigned int *)v_addr);
+printk("----------------csi2_sysconfig:0x%x\n", val);
+
+
+v_addr = ioremap(0x480BD970, 4);
+val = *((volatile unsigned int *)v_addr);
+printk("----------------csiphy_reg0:0x%x\n", val);
+
+v_addr = ioremap(0x480BD974, 4);
+val = *((volatile unsigned int *)v_addr);
+printk("----------------csiphy_reg1:0x%x\n", val);
+
+v_addr = ioremap(0x480BD978, 4);
+val = *((volatile unsigned int *)v_addr);
+printk("----------------csiphy_reg2:0x%x\n", val);
+
+/********************************************/
+
+v_addr = ioremap(0x480BD850, 4);
+val = *((volatile unsigned int *)v_addr);
+printk("----------------csi2_complexio_cfg1:0x%x\n", val);
+
+v_addr = ioremap(0x480BD86C, 4);
+val = *((volatile unsigned int *)v_addr);
+printk("----------------csi2_timing:0x%x\n", val);
+
+
+v_addr = ioremap(0x480BD840, 4);
+val = *((volatile unsigned int *)v_addr);
+printk("----------------csi2_ctrl:0x%x\n", val);
+
+v_addr = ioremap(0x480BD81C, 4);
+val = *((volatile unsigned int *)v_addr);
+printk("----------------csi2_irqenable:0x%x\n", val);
+
+v_addr = ioremap(0x480BD818, 4);
+val = *((volatile unsigned int *)v_addr);
+printk("----------------csi2_irqstatus:0x%x\n", val);
+
+v_addr = ioremap((0x480BD860 + (x * 0x20)), 4);
+val = *((volatile unsigned int *)v_addr);
+printk("----------------csi2_complexio1_irqenable:0x%x\n", val);
+
+v_addr = ioremap((0x480BD854 + (x * 0x20)), 4);
+val = *((volatile unsigned int *)v_addr);
+printk("----------------csi2_complexio1_irqstat:0x%x\n", val);
+//-------------------------------------------------------------
+v_addr = ioremap((0x480bd870 + (x * 0x20)), 4);
+val = *((volatile unsigned int *)v_addr);
+printk("----------------csi2_ctx_ctrl1:0x%x\n", val);
+
+v_addr = ioremap((0x480bd874 + (x * 0x20)), 4);
+val = *((volatile unsigned int __force *)v_addr);
+printk("----------------csi2_ctx_ctrl2:0x%x\n", val);
+
+v_addr = ioremap((0x480bd9c0 + (x * 0x8)), 4);
+val = *((volatile unsigned int *)v_addr);
+printk("----------------csi2_ctx_transcodeh:0x%x\n", val);
+
+v_addr = ioremap((0x480bd9c4 + (x * 0x8)), 4);
+val = *((volatile unsigned int *)v_addr);
+printk("----------------csi2_ctx_transcodev:0x%x\n", val);
+
+v_addr = ioremap((0x480bd878 + (x * 0x20)), 4);
+val = *((volatile unsigned int *)v_addr);
+printk("----------------csi2_ctx_dat_ping_addr:0x%x\n", val);
+
+v_addr = ioremap((0x480bd880 + (x * 0x20)), 4);
+val = *((volatile unsigned int *)v_addr);
+printk("----------------csi2_ctx_dat_pong_addr:0x%x\n", val);
+/*********************************/
+
 	return err;
 }
 
@@ -1839,7 +1696,6 @@ static int ioctl_queryctrl(struct v4l2_int_device *s, struct v4l2_queryctrl *qc)
  */
 static int ioctl_g_ctrl(struct v4l2_int_device *s, struct v4l2_control *vc)
 {
-#if 0
 	struct vcontrol *lvc;
 	int i;
 	printk("%s...........%d\n",__func__,__LINE__);
@@ -1862,10 +1718,7 @@ static int ioctl_g_ctrl(struct v4l2_int_device *s, struct v4l2_control *vc)
 	}
 
 	return 0;
-#endif
-	return true;
 }
-
 
 /**
  * ioctl_s_ctrl - V4L2 sensor interface handler for VIDIOC_S_CTRL ioctl
@@ -1878,7 +1731,6 @@ static int ioctl_g_ctrl(struct v4l2_int_device *s, struct v4l2_control *vc)
  */
 static int ioctl_s_ctrl(struct v4l2_int_device *s, struct v4l2_control *vc)
 {
-#if 0
 	int retval = -EINVAL;
 	int i;
 	struct vcontrol *lvc;
@@ -1902,8 +1754,6 @@ static int ioctl_s_ctrl(struct v4l2_int_device *s, struct v4l2_control *vc)
 	}
 
 	return retval;
-#endif 
-	return true;
 }
 
 
@@ -1978,6 +1828,7 @@ static int ioctl_try_fmt_cap(struct v4l2_int_device *s, struct v4l2_format *f)
 	pix->priv = 0;
 	pix->colorspace = V4L2_COLORSPACE_SRGB;
 	*pix2 = *pix;
+
 	return 0;
 }
 
@@ -1996,14 +1847,12 @@ static int ioctl_s_fmt_cap(struct v4l2_int_device *s, struct v4l2_format *f)
 	struct v4l2_pix_format *pix = &f->fmt.pix;
 	int rval;
 
-
 	printk("%s...........%d\n",__func__,__LINE__);
 	rval = ioctl_try_fmt_cap(s, f);
 	if (rval)
 		return rval;
 	else
 		sensor->pix = *pix;
-
 
 	return rval;
 }
@@ -2187,7 +2036,6 @@ static int ioctl_s_parm(struct v4l2_int_device *s, struct v4l2_streamparm *a)
 	return err;
 }
 
-
 /**
  * ioctl_g_priv - V4L2 sensor interface handler for vidioc_int_g_priv_num
  * @s: pointer to standard V4L2 device structure
@@ -2201,7 +2049,6 @@ static int ioctl_g_priv(struct v4l2_int_device *s, void *p)
 	printk("%s...........%d\n",__func__,__LINE__);
 
 	return sensor->pdata->priv_data_set(s, p);
-
 }
 
 static int __ov5640_power_off_standby(struct v4l2_int_device *s,
@@ -2369,26 +2216,10 @@ static int ioctl_dev_init(struct v4l2_int_device *s)
 	v4l_info(client, OV5640_DRIVER_NAME
 		" chip version 0x%02x detected\n", sensor->ver);
 
-/**************************************************************/
-
-#if 0
-//added by myself below;
-	ov5640_write_reg(client, OV5640_REG_SW_RESET, 0x01, I2C_8BIT);
-	mdelay(5);
-	ov5640_write_regs(client, initial_list);
-/***********************/
-int xxx;
-const struct ov5640_reg *list = reglist;
-ov5640_read_reg(client, I2C_8BIT, list->reg, &xxx);
-printk("----------------------check i2c write 0x%x val:0x%x\n", list->reg, xxx);
-/***********************/
-#endif
-/**************************************************************/
-
 #if 1
 	err = ov5640_power_off(s);
 	if (err) {
-		printk("--------------power off err in func:%s line:%d\n", __func__, __LINE__);
+		printk("-------power off err in func:%s line:%d\n", __func__, __LINE__);
 		return -ENODEV;
 	}
 #endif
@@ -2621,7 +2452,6 @@ static struct ov5640_sensor ov5640 = {
 		.denominator = 30,
 	},
 };
-
 
 /**
  * ov5640sensor_init - sensor driver module_init handler

@@ -827,18 +827,21 @@ int isp_configure_interface(struct device *dev,
 						 config->u.csi.vpclk);
 		switch (isp->pipeline.csia_out) {
 		case CSI2_MEM:
+printk("--------------------------CSI2A_MEM\n");
 			isp_csi2_ctrl_config_vp_only_enable(&isp->isp_csi2,
 							    false);
 			isp_csi2_ctrl_config_vp_clk_enable(&isp->isp_csi2,
 							   false);
 			break;
 		case CSI2_VP:
+printk("--------------------------CSI2A_VP\n");
 			isp_csi2_ctrl_config_vp_only_enable(&isp->isp_csi2,
 							    true);
 			isp_csi2_ctrl_config_vp_clk_enable(&isp->isp_csi2,
 							   true);
 			break;
 		case CSI2_MEM_VP:
+printk("--------------------------CSI2A_MEM_VP\n");
 			isp_csi2_ctrl_config_vp_only_enable(&isp->isp_csi2,
 							    false);
 			isp_csi2_ctrl_config_vp_clk_enable(&isp->isp_csi2,
